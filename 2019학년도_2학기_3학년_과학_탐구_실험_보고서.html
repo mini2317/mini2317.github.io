@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>2019학년도 2학기 3학년 과학 탐구 실험 보고서</title>
+  <script type="application/javascript">
+    function draw(){
+      var canvas = document.getElementById("V=IR");
+      if(canvas.getContext){
+        var ctx = canvas.getContext("2d");
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = '#000000';
+        ctx.font = "15px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText("V", 0, 15);
+        ctx.textAlign = "right";
+        ctx.fillText("I", 200, 200);
+        ctx.textAlign = "left";
+        ctx.fillText("(기울기)=R",110,110);
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(15, 185);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(15, 185);
+        ctx.lineTo(200, 185);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(15, 185);
+        ctx.lineTo(200, 0);
+        ctx.stroke();
+        var canvas = document.getElementById("I=V/R");
+        var ctx = canvas.getContext("2d");
+        ctx.font = "15px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText("I", 0, 15);
+        ctx.textAlign = "right";
+        ctx.fillText("V", 200, 200);
+        ctx.fillText("(기울기)=1/R",200,110);
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(15, 185);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(15, 185);
+        ctx.lineTo(200, 185);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(15, 185);
+        ctx.lineTo(200, 0);
+        ctx.stroke();
+        var canvas = document.getElementById("직렬");
+        var ctx = canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(10, 130);
+        ctx.lineTo(10, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(10, 10);
+        ctx.lineTo(70, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(73, 10, 3, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(76, 10);
+        ctx.lineTo(109, 3);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(109, 10, 3, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(112, 10);
+        ctx.lineTo(200, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(200, 0);
+        ctx.lineTo(200, 20);
+        ctx.stroke();
+        ctx.fillRect(205, 3, 3, 14);
+        ctx.stroke();
+        ctx.moveTo(215, 0);
+        ctx.lineTo(215, 20);
+        ctx.stroke();
+        ctx.fillRect(220, 3, 3, 14);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(220, 10);
+        ctx.lineTo(240, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 10);
+        ctx.lineTo(240, 50);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(240, 60, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.textAlign = "middle";
+        ctx.font = "15px Arial";
+        ctx.fillText("A", 235, 64);
+        ctx.beginPath();
+        ctx.moveTo(235, 66);
+        ctx.lineTo(245, 66);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 70);
+        ctx.lineTo(240, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 130);
+        ctx.lineTo(180, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(10, 130);
+        ctx.lineTo(70, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 130);
+        ctx.lineTo(40, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 130);
+        ctx.lineTo(40, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 70);
+        ctx.lineTo(115, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(125, 70, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.textAlign = "middle";
+        ctx.font = "15px Arial";
+        ctx.fillText("V", 120, 74);
+        ctx.beginPath();
+        ctx.beginPath();
+        ctx.moveTo(120, 76);
+        ctx.lineTo(130, 76);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(135, 70);
+        ctx.lineTo(210, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(210, 70);
+        ctx.lineTo(210, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(180, 130);
+        ctx.lineTo(166, 130);
+        ctx.stroke();
+        R("직렬",166,130,2)
+        ctx.beginPath();
+        ctx.moveTo(139, 130);
+        ctx.lineTo(115, 130);
+        ctx.stroke();
+        R("직렬",115,130,1)
+        ctx.beginPath();
+        ctx.moveTo(88, 130);
+        ctx.lineTo(70, 130);
+        ctx.stroke();
+        //여기서 부터는 I,I1,I2,V,V1,V2표시
+        //V
+        ctx.beginPath();
+        ctx.moveTo(88-12, 130);
+        ctx.lineTo(88-12, 150);
+        ctx.stroke();
+        black_arrow("직렬",115-20,140,115-33,140);
+        ctx.font = "13px Arial";
+        ctx.textAlign = "middle";
+        ctx.fillText("V₁", 115-18, 147);
+        black_arrow("직렬",115-7,140,115+8,140);
+        ctx.beginPath();
+        ctx.moveTo(139-12, 130);
+        ctx.lineTo(139-12, 150);
+        ctx.stroke();
+        black_arrow("직렬",166-20,140,166-33,140);
+        ctx.textAlign = "middle";
+        ctx.fillText("V₂", 166-18, 147);
+        black_arrow("직렬",166-7,140,166+8,140);
+        ctx.beginPath();
+        ctx.moveTo(166+12, 130);
+        ctx.lineTo(166+12, 150);
+        ctx.stroke();
+        ctx.textAlign = "middle";
+        ctx.fillText("V", 122.5, 55);
+        ctx.font = "15px Arial";
+        //I
+        red_arrow("직렬",166,120,166,120,166+20,120);
+        red_arrow("직렬",115,120,115,120,115+20,120);
+        red_arrow("직렬",235,50,235,50,235,50-20);
+        ctx.textAlign = "middle";
+        ctx.font = "13px Arial";
+        ctx.fillText("I₁", 115+7, 115);
+        ctx.fillText("I₂", 166+7, 115);
+        ctx.font = "15px Arial";
+        ctx.fillText("I", 235-10, 45);
+        var canvas = document.getElementById("병렬");
+        var ctx = canvas.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(10, 130);
+        ctx.lineTo(10, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(10, 10);
+        ctx.lineTo(70, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(73, 10, 3, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(76, 10);
+        ctx.lineTo(109, 3);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(109, 10, 3, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(112, 10);
+        ctx.lineTo(200, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(200, 0);
+        ctx.lineTo(200, 20);
+        ctx.stroke();
+        ctx.fillRect(205, 3, 3, 14);
+        ctx.stroke();
+        ctx.moveTo(215, 0);
+        ctx.lineTo(215, 20);
+        ctx.stroke();
+        ctx.fillRect(220, 3, 3, 14);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(220, 10);
+        ctx.lineTo(240, 10);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 10);
+        ctx.lineTo(240, 50);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(240, 60, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.textAlign = "middle";
+        ctx.font = "15px Arial";
+        ctx.fillText("A", 235, 64);
+        ctx.beginPath();
+        ctx.moveTo(235, 66);
+        ctx.lineTo(245, 66);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 70);
+        ctx.lineTo(240, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(240, 130);
+        ctx.lineTo(180, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(10, 130);
+        ctx.lineTo(70, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 130);
+        ctx.lineTo(40, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 130);
+        ctx.lineTo(40, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(40, 70);
+        ctx.lineTo(115, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(125, 70, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.textAlign = "middle";
+        ctx.font = "15px Arial";
+        ctx.fillText("V", 120, 74);
+        ctx.beginPath();
+        ctx.beginPath();
+        ctx.moveTo(120, 76);
+        ctx.lineTo(130, 76);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(135, 70);
+        ctx.lineTo(210, 70);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(210, 70);
+        ctx.lineTo(210, 130);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(70+41.5, 110);
+        ctx.lineTo(70, 110);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(180, 110);
+        ctx.lineTo(180-41.5, 110);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(70+41.5, 150);
+        ctx.lineTo(70, 150);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(180, 150);
+        ctx.lineTo(180-41.5, 150);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(70, 150);
+        ctx.lineTo(70, 110);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(180, 150);
+        ctx.lineTo(180, 110);
+        ctx.stroke();
+        R("병렬",180-41.5,110,1)
+        R("병렬",180-41.5,150,2)
+        //여기서 부터는 I,I1,I2,V,V1,V2표시
+        ctx.textAlign = "middle";
+        ctx.font = "13px Arial";
+        ctx.fillText("V", 122.5, 55);
+        ctx.font = "15px Arial";
+        //V
+        black_arrow("병렬",180-60.5,120,115-33,120);
+        black_arrow("병렬",180-60.5+17,120,180-12,120);
+        black_arrow("병렬",180-60.5,160,115-33,160);
+        black_arrow("병렬",180-60.5+17,160,180-12,160);
+        ctx.beginPath();
+        ctx.moveTo(180, 152);
+        ctx.lineTo(180, 170);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(70, 152);
+        ctx.lineTo(70, 170);
+        ctx.stroke();
+        ctx.font = "13px Arial";
+        ctx.textAlign = "middle";
+        ctx.fillText("V₁", 166-43,127);
+        ctx.fillText("V₂", 166-43,167);
+        //I
+        red_arrow("병렬",65,140,65,155,100,155);
+        red_arrow("병렬",65,120,65,105,100,105);
+        red_arrow("병렬",235,50,235,50,235,30);
+        ctx.textAlign = "middle";
+        ctx.font = "15px Arial";
+        ctx.fillText("I₁", 53, 110);
+        ctx.fillText("I₂", 53, 160);
+        ctx.fillText("I", 235-10, 45);
+      }
+    }
+    function R(mod,x,y,num){
+      var canvas = document.getElementById(mod);
+      if(canvas.getContext){
+        var ctx = canvas.getContext("2d");
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x-3, y+5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-3, y+5);
+        ctx.lineTo(x-6, y-5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-6, y-5);
+        ctx.lineTo(x-9, y+5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-9, y+5);
+        ctx.lineTo(x-12, y-5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-12, y-5);
+        ctx.lineTo(x-15, y+5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-15, y+5);
+        ctx.lineTo(x-18, y-5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-18, y-5);
+        ctx.lineTo(x-21, y+5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-21, y+5);
+        ctx.lineTo(x-24, y-5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x-24, y-5);
+        ctx.lineTo(x-27, y);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.textAlign = "middle";
+        ctx.font = "13px Arial";
+        if(num==1){
+          ctx.fillText("R₁", x-17, y-10);
+        }else if (num==2){
+          ctx.fillText("R₂", x-17, y-10);
+        }
+        ctx.font = "15px Arial";
+      }
+    }
+    function black_arrow(mod,x1,y1,x2,y2){
+      var canvas = document.getElementById(mod);
+      if(canvas.getContext){
+        var ctx = canvas.getContext("2d");
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.stroke();
+        if (x1<x2) {
+          ctx.beginPath();
+          ctx.moveTo(x2-2,y2-2);
+          ctx.lineTo(x2-2,y2+2);
+          ctx.lineTo(x2,y2);
+          ctx.fill()
+          ctx.stroke();
+        }else{
+          ctx.beginPath();
+          ctx.moveTo(x2+2,y2-2);
+          ctx.lineTo(x2+2,y2+2);
+          ctx.lineTo(x2,y2);
+          ctx.fill()
+          ctx.stroke();
+        }
+      }
+    }
+    function red_arrow(mod,x1,y1,x2,y2,x3,y3){
+      var canvas = document.getElementById(mod);
+      if(canvas.getContext){
+        var ctx = canvas.getContext("2d");
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        ctx.strokeStyle = '#ff0000';
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x2,y2);
+        ctx.lineTo(x3,y3);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        if (x2<x3 && y2==y3) {
+          ctx.beginPath();
+          ctx.moveTo(x3-4,y3-4);
+          ctx.lineTo(x3-4,y3+4);
+          ctx.lineTo(x3,y3);
+          ctx.fill()
+          ctx.stroke();
+        }else if (x2>x3 && y2==y3){
+          ctx.beginPath();
+          ctx.moveTo(x3+4,y3-4);
+          ctx.lineTo(x3+4,y3+4);
+          ctx.lineTo(x3,y3);
+          ctx.fill()
+          ctx.stroke();
+        }else if (y2<y3 && x2==x3) {
+          ctx.beginPath();
+          ctx.moveTo(x3-4,y3-4);
+          ctx.lineTo(x3+4,y3-4);
+          ctx.lineTo(x3,y3);
+          ctx.fill()
+          ctx.stroke();
+        }else{
+          ctx.beginPath();
+          ctx.moveTo(x3-4,y3+4);
+          ctx.lineTo(x3+4,y3+4);
+          ctx.lineTo(x3,y3);
+          ctx.fill()
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+      }
+    }
+  </script>
+</head>
+<body onload="draw();">
+  <style media="screen">
+    #TITLE {
+      text-align: center;
+    }
+    table {
+      border: 1px solid #444444;
+      border-collapse: collapse;
+    }
+    td {
+      width: 140px;
+      font-size: 15px;
+      text-align: center;
+      border: 1px solid #444444;
+      padding: 5px;
+    }
+    .graph{
+      margin-left : 10px;
+    }
+  </style>
+  <input type="button" name="PRINT" value="PRINT" onclick="print()">
+  Made by 30723 이정민
+  <h1><p id="TITLE">2019학년도 2학기 3학년 과학 탐구 실험 보고서</p></h1>
+  <h2>I . 전기와 자기 - 전압과 전류의 관계 (교과서 24-41쪽)</h2>
+  <form>
+    <fieldset>
+      <label>1. 옴의 법칙 [8점]</label><br>
+      <label>(1)옴에 법칙에 대한 정의를 쓰고, 관련된 식 3가지를 작성하시오. [4점]</label>
+      <table>
+        <tr>
+          <td>옴의 법칙</td><td colspan="3"><textarea name="3-(1)" rows="2" cols="50">도선에 흐르는 전류는 전압에 비례하고,저항에 반비례한다는 법칙</textarea></td>
+        </tr>
+        <tr>
+          <td>옴의 법칙 식 3가지</td><td colspan="3"><textarea name="3-(1)" rows="2" cols="50">R=V/I,V=IR,I=V/R</textarea></td>
+        </tr>
+      </table><br>
+      <label>(2)다음에 해당하는 그래프를 그리고, 그래프의 가로축과 세로축, 그리고 기울기가 기울기가 의미하는 값이 무엇인지를 설명하시오. [4점]</label><br>
+      <table>
+        <tr>
+          <td><canvas id="V=IR" width="200" height="200"></canvas></td><td><canvas id="I=V/R" width="200" height="200"></canvas></td>
+        </tr>
+        <tr>
+          <td><i>V=IR</i></td><td><i>I=V/R</i></td>
+        </tr>
+      </table><br>
+      <label>2. 직렬연결과 병렬연결 [18점]</label><br>
+      <label>&nbsp;(1) 다음의 재료를 모두 사용하여 직렬 연결과 병렬연결의 회로도를 각각 그리시오. [4점]</label><br>
+      <table>
+        <tr>
+          <td><canvas id="직렬" width="260" height="170"></canvas></td><td><canvas id="병렬" width="260" height="170"></canvas></td>
+        </tr>
+        <tr>
+          <td>직렬연결</td><td>병렬연결</td>
+        </tr>
+        <tr>
+          <td colspan="2">도구 : 전지 2개, 스위치, 전류계, 전압계,저항 2개(<i>R₁,R₂</i>)</td>
+        </tr>
+      </table><br>
+      <label>&nbsp;(2) 위 회로도에서 연결 방식이 직렬, 병렬일 때, 전압과 전류, 그리고 저항 값에 대한 관계를 설명하시오. [6점]</label><br>
+      <table>
+        <tr>
+          <td></td><td>전류(<i>I</i>,<i>I₁</i>,<i>I₂</i>)</td><td>전압(<i>V</i>,<i>V₁</i>,<i>V₂</i>)</td><td>저항(<i>R</i>,<i>R₁</i>,<i>R₂</i>)</td>
+        </tr>
+        <tr>
+          <td>직렬연결</td><td><textarea name="2-(2)-1)-1" rows="1" cols="20">I=I1=I2</textarea></td><td><textarea name="2-(2)-1)-2" rows="1" cols="20">V=V1+V2</textarea></td><td><textarea name="2-(2)-1)-3" rows="1" cols="20">R=R1+R2</textarea></td>
+        </tr>
+        <tr>
+          <td>병렬연결</td><td><textarea name="2-(2)-2)-1" rows="1" cols="20">I=I1+I2</textarea></td><td><textarea name="2-(2)-2)-2" rows="1" cols="20">V=V1=V2</textarea></td><td><textarea name="2-(2)-2)-3" rows="1" cols="20">1/R=1/R1+1/R2</textarea></td>
+        </tr>
+      </table><br>
+      <label>&nbsp;(3) 합성저항을 구하는 식을 연결 방식에 따른 전류, 전압의 관계, 그리고 옴의 법칙을 사용하여 유도해보시오. [8점, 각 4점]</label><br>
+      <label> &nbsp; &nbsp;1) 직렬연결인 경우 합성저항의 식 유도</label><br>
+      <label><textarea name="2-(3)-1)" rows="5" cols="70">V=IR이므로 V=V1+V2은 IR=I1R1+I2R2이다.
+그런데 직렬연결에서는 I=I1=I2이므로,IR=IR1+IR2가 되는데,이때 양변에 I를 나누면
+R=R1+R2라는 식이 나온다.</textarea></label><br>
+      <label>&nbsp; &nbsp;2)병렬연결인 경우 합성저항의 식 유도</label><br>
+      <label><textarea name="2-(3)-2)" rows="5" cols="70">I=V/R이므로 I=I1+I2은 V/R=V1/R1+V2/R2이다.
+그런데 병렬연결에서는 V=V1=V2이므로,V/R=V/R1+V/R2가 되는데,이때 양변에 V를 나누면
+1/R=1/R1+1/R2라는 식이 나온다.</textarea></label><br>
+    </fieldset>
+  </form>
+</body>
+</html>
