@@ -171,3 +171,23 @@ $(document).keydown(function(e) {
     }
   }
 });
+window.addEventListener('mousemove',function(e){
+  mouse.x=e.x;
+  mouse.y=e.y;
+});
+$(document).click(function (evt) {
+  mouse.click=1;
+})
+$(document).keydown(function(e) {
+  for (var i = 0; i < Object.keys(Key).length; i++) {
+    if (e.keyCode==KeyCode[Object.keys(KeyCode)[i]]) {
+      Key[Object.keys(KeyCode)[i]]=1;
+    }
+  }
+}).keyup(function(e) {
+ for (var i = 0; i < Object.keys(Key).length; i++) {
+   if (e.keyCode==KeyCode[Object.keys(KeyCode)[i]]) {
+     Key[Object.keys(KeyCode)[i]]=0;
+   }
+ }
+});
