@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>뒷자리계산기</title>
+  <style>
+    th, td {
+      border: 1px solid #444444;
+    }
+  </style>
+  <script>
+  function Table(td) {
+    value = `<table>\n`;
+    for(i = 0; i < td.length; i+=1){
+      value += `<tr>`;
+      for(j = 0; j < td[i].length; j+=1)
+      value += `<td>${td[i][j]}</td>`;
+      value += `</tr>\n`;
+    }
+    value += `</table>`;
+    return value;
+  }
+
+  function getRadio(Name){
+    mod = document.getElementsByName(Name);
+    for(var i = 0; i < mod.length; i++){
+      if (mod[i].checked == true)
+        return mod[i].value*1;
+    }
+  }
+
+  function ok(){
+    under = document.getElementById("under").value*1;
+    up = document.getElementById("up").value*1;
+    jari = document.getElementById("jari").value*1;
+    RESULT = document.getElementById("result");
+    under %= 10**jari;
+    result = 1;
+    substance = [];
+    if (getRadio("mod")) {
+      for (var i = 0; i < up; i++) {
+        result *= under;
+        if (result >= 10**jari)
+          result %= 10**jari
+        if(getRadio("result"))
+          substance.push([(i+1)+")",result]);
+      }
+      if (!getRadio("result"))
+        substance.push([i+")",result]);
+    }else{
+      save = []
+      var i = 0;
+      temp = []
+      while(1){
+        result *= under;
+        if (result >= 10**jari)
+          result %= 10**jari
+        if(getRadio("result"))
+          //substance.push([(i+1)+")",result]);
+          console.log((i+1)+")"+result);
+        if (save.indexOf(result)!=-1)
+          break;
+        save.push(result);
+        i+=1;
+      }
+      if (!getRadio("result"))
+        substance.push([(save.indexOf(result)+1)+")",save[save.indexOf(result)]]);
+      if (!getRadio("result"))
+        substance.push([(i+1)+")",result]);
+      console.log(save);
+    }
+    RESULT.innerHTML = "<div id = \"result\">"+Table(substance)+"</div>";
+  }
+  </script>
+</head>
+<body>
+  밑     : <input type="text" id="under"><br>
+  지수   : <input type="text" id="up"><br>
+  자리수 : <input type="text" id="jari"><br>
+  <h3>모드</h3>
+  <input type="radio" name="mod" value="1" checked="checked">기본
+  <input type="radio" name="mod" value="0">주기찾기<br>
+  <input type="radio" name="result" value="1" checked="checked">전부
+  <input type="radio" name="result" value="0">결과<br>
+  <input type="button" value="확인" id="ok" onclick="ok()">
+  <div id = "result">
+  </div>
+</body>
+</html>
