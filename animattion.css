@@ -1,0 +1,23 @@
+@-webkit-keyframes go{
+  0% {
+    top : -100px;
+  }
+  100% {
+    top : 0px;
+  }
+}
+.boxmove{
+  position:absolute;
+  width:5000px;
+  left : -10px;
+  height: 75px;
+  background-color:#000;
+  color:#fff;
+  /* 애니메이션 이름 */
+  animation-name: go;
+  animation-duration:1s;
+  animation-duration: leaner;
+  animation-iteration-count:1;
+  animation-direction:alternate;
+  animation-fill-mode: forwards;
+}
