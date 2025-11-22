@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>점심시간에 코인하기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #111827; /* Dark bg */
+            color: #e5e7eb;
+            overflow: hidden; /* No scrolling */
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; 
+        }
+
+        .up-color { color: #ff4d4d; }
+        .down-color { color: #4d79ff; }
+        .bg-up { background-color: #ff4d4d; }
+        .bg-down { background-color: #4d79ff; }
+
+        .blink-red { animation: blinkRed 0.3s; }
+        .blink-blue { animation: blinkBlue 0.3s; }
+
+        @keyframes blinkRed {
+            0% { background-color: rgba(255, 77, 77, 0.5); }
+            100% { background-color: transparent; }
+        }
+        @keyframes blinkBlue {
+            0% { background-color: rgba(77, 121, 255, 0.5); }
+            100% { background-color: transparent; }
+        }
+
+        /* Grid Layout */
+        .game-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            grid-template-rows: 1fr 200px;
+            gap: 0.75rem;
+            height: calc(100vh - 70px);
+            padding: 0.75rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .game-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, auto);
+                overflow-y: auto;
+                height: auto;
+            }
+        }
+        
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .beast-font {
+            font-family: 'Black Han Sans', sans-serif;
+        }
+
+        /* Intro Transitions */
+        .fade-enter { opacity: 0; }
+        .fade-enter-active { opacity: 1; transition: opacity 1s ease-in; }
+        .fade-exit { opacity: 1; }
+        .fade-exit-active { opacity: 0; transition: opacity 1s ease-out; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="h-[70px] bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6 shadow-lg z-10 relative">
+        <div class="flex flex-col">
+            <span class="text-gray-400 text-[10px] font-bold tracking-wider">맛있는 점심을 위한 여정</span>
+            <h1 class="text-xl text-white leading-tight beast-font tracking-widest">점심시간에 코인하기</h1>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="flex gap-6 text-sm bg-gray-900 px-6 py-2 rounded-lg border border-gray-700 shadow-inner items-center">
+            <div class="flex flex-col items-end">
+                <span class="text-gray-500 text-[10px]">가용 현금</span>
+                <span id="cash-display" class="font-mono font-bold text-yellow-400 text-xl">0</span>
+            </div>
+            <div class="w-px h-8 bg-gray-700"></div>
+            <div class="flex flex-col items-end">
+                <span class="text-gray-500 text-[10px]">평가 손익</span>
+                <span id="total-profit-display" class="font-mono font-bold text-white text-xl">0</span>
+            </div>
+            <div class="w-px h-8 bg-gray-700"></div>
+            <div class="flex flex-col items-end justify-center min-w-[60px]">
+                <span class="text-gray-500 text-[10px] mb-0.5">남은 시간</span>
+                <span id="timer-display" class="font-mono font-bold text-red-500 text-2xl leading-none">00:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="game-grid">
+        
+        <!-- 1. Stock List (Left) -->
+        <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-2">
+            <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 flex justify-between items-center text-sm">
+                <span>실시간 시세</span>
+            </div>
+            <div id="stock-list" class="flex-1 overflow-y-auto p-1 space-y-1">
+                <!-- Stock Items -->
+            </div>
+        </section>
+
+        <!-- 2. Chart (Center) -->
+        <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-1 relative">
+            <!-- Chart Header -->
+            <div class="px-4 py-2 bg-gray-900 border-b border-gray-700 flex justify-between items-center h-14">
+                <div>
+                    <div class="flex items-baseline gap-2">
+                        <h2 id="selected-name" class="text-lg font-black text-white">코인선택</h2>
+                        <span id="selected-code" class="text-xs text-gray-500">KRW-???</span>
+                    </div>
+                </div>
+                <div class="text-right flex flex-col">
+                    <span id="selected-price" class="text-2xl font-mono font-bold text-white leading-none">0</span>
+                    <span id="selected-change" class="text-xs font-bold text-right">0%</span>
+                </div>
+            </div>
+
+            <!-- Chart Area -->
+            <div class="flex-1 relative bg-gray-900 w-full h-full overflow-hidden group">
+                <canvas id="price-chart" class="w-full h-full absolute top-0 left-0 cursor-crosshair"></canvas>
+            </div>
+        </section>
+
+        <!-- 3. Order Panel (Right) -->
+        <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-2">
+            <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-sm">
+                주문
+            </div>
+            
+            <!-- Order Form -->
+            <div class="p-3 flex flex-col gap-3 border-b border-gray-700 bg-gray-800">
+                <!-- Price Input -->
+                <div>
+                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>주문 가격</span>
+                        <button onclick="game.setOrderPriceToCurrent()" class="text-blue-400 hover:text-blue-300 underline">현재가 적용</button>
+                    </div>
+                    <div class="relative">
+                        <input id="order-price-input" type="number" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-right font-mono text-lg text-white focus:border-blue-500 outline-none" placeholder="가격 입력">
+                        <span class="absolute left-2 top-2.5 text-gray-500 text-xs">₩</span>
+                    </div>
+                </div>
+
+                <!-- Quantity Select -->
+                <div>
+                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>주문 수량 (보유: <span id="holding-qty" class="text-white">0</span>개)</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="game.setQuantity(0.5)" id="btn-50" class="qty-btn py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">50%</button>
+                        <button onclick="game.setQuantity(1.0)" id="btn-100" class="qty-btn py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">100%</button>
+                    </div>
+                </div>
+
+                <!-- Buy/Sell Buttons -->
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                    <button onclick="game.placeOrder('buy')" class="bg-red-900/30 hover:bg-red-600 border border-red-600 text-red-500 hover:text-white py-3 rounded font-bold text-sm transition active:scale-95">
+                        매수 주문
+                    </button>
+                    <button onclick="game.placeOrder('sell')" class="bg-blue-900/30 hover:bg-blue-600 border border-blue-600 text-blue-500 hover:text-white py-3 rounded font-bold text-sm transition active:scale-95">
+                        매도 주문
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Orders List -->
+            <div class="flex-1 flex flex-col overflow-hidden">
+                <div class="px-3 py-2 bg-gray-900/50 text-xs text-gray-500 font-bold border-b border-gray-700">
+                    미체결 주문 현황
+                </div>
+                <div id="order-list" class="flex-1 overflow-y-auto p-2 space-y-2">
+                    <!-- Orders go here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Portfolio (Bottom Center) -->
+        <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-1">
+            <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-xs flex justify-between">
+                <span>포트폴리오</span>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="text-gray-500 bg-gray-900/50 sticky top-0">
+                        <tr>
+                            <th class="p-3 font-normal">코인명</th>
+                            <th class="p-3 text-right font-normal">보유수량</th>
+                            <th class="p-3 text-right font-normal">평단가</th>
+                            <th class="p-3 text-right font-normal">총 매수금액</th>
+                            <th class="p-3 text-right font-normal">평가손익</th>
+                        </tr>
+                    </thead>
+                    <tbody id="portfolio-table" class="divide-y divide-gray-700 cursor-pointer">
+                        <!-- Rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- INTRO SCREEN (Cinematic) -->
+    <div id="intro-overlay" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+        <div id="intro-content" class="text-center transition-opacity duration-1000 px-4">
+            <!-- JS Injected Content -->
+        </div>
+    </div>
+
+    <!-- RESULT MODAL -->
+    <div id="result-modal" class="fixed inset-0 bg-black/90 z-40 flex items-center justify-center backdrop-blur-sm" style="display: none;">
+        <div class="bg-gray-800 p-8 rounded-2xl border border-gray-600 max-w-md w-full text-center shadow-2xl transform transition-all scale-100">
+            <h2 id="modal-title" class="text-4xl text-white mb-2 tracking-tighter beast-font text-red-500">게임 종료</h2>
+            <div id="modal-desc" class="my-6 space-y-4 text-sm text-gray-300">
+                <!-- Result Content -->
+            </div>
+            <button onclick="game.resetAndStart()" id="modal-btn" class="w-full bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 text-white font-bold py-4 px-6 rounded-lg text-lg shadow-lg transition-all transform hover:scale-[1.02] ring-2 ring-red-900">
+                다시 도전하기
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl border border-gray-600 opacity-0 pointer-events-none transition-opacity duration-300 z-50 font-bold text-sm flex items-center gap-2 text-center">
+        <span id="toast-msg">메시지</span>
+    </div>
+
+    <script>
+        // --- Game Config ---
+        const CONFIG = {
+            initialMoney: 1000000,
+            timeLimitSeconds: 240, 
+            tickRate: 500, 
+            historyLength: 60,
+            delistPrice: 300
+        };
+
+        const INITIAL_STOCKS = [
+            { name: "시녕코인", code: "SYC-KRW", basePrice: 10000, volatility: 0.04 },
+            { name: "무민네트워크", code: "MMN-KRW", basePrice: 4000, volatility: 0.05 },
+            { name: "햎프박스", code: "HFB-KRW", basePrice: 800, volatility: 0.08 },
+            { name: "시카무요", code: "CKY-KRW", basePrice: 400, volatility: 0.1 },
+            { name: "로보갓", code: "RBG-KRW", basePrice: 5000, volatility: 0.06 },
+            { name: "마늘네트워크", code: "GAR-KRW", basePrice: 1500, volatility: 0.09 },
+            { name: "분탕코인", code: "BTG-KRW", basePrice: 2200, volatility: 0.3 },
+        ];
+
+        // 랜덤 생성용 이름 파츠 (Name Parts)
+        const NAME_PREFIXES = [
+            { ko: "분탕", en: "BT" }, { ko: "와", en: "WA" }, { ko: "미니", en: "MINI" }, { ko: "키키", en: "KIKI" },
+            { ko: "무민", en: "MOO" }, { ko: "샌드", en: "SAND" }, { ko: "스톰", en: "STORM" }, { ko: "MIPC", en: "MIPC" },
+            { ko: "시녕", en: "SN" }, { ko: "햎프", en: "HAPP" }, { ko: "올리브", en: "OLIVE" }, { ko: "진원", en: "JW" },
+            { ko: "고야이", en: "GOY" }, { ko: "스치", en: "SCH" }, { ko: "라투", en: "RATU" }, { ko: "코디", en: "CODY" },
+            { ko: "시카", en: "SK" }, { ko: "에프마스", en: "FMAS" }, { ko: "게임", en: "GAME" }, { ko: "코인", en: "COIN" },
+            { ko: "브레인", en: "BRAIN" }, { ko: "로동", en: "ROD" }, { ko: "수박", en: "WAT" }, { ko: "라탕", en: "RAT" },
+            { ko: "로보", en: "ROBO" }, { ko: "마늘", en: "GAL" }, { ko: "와섭", en: "WAS" }, { ko: "백학", en: "WHT" }
+        ];
+
+        const NAME_SUFFIXES = [
+            { ko: "코인", en: "C" }, { ko: "토큰", en: "TK" }, { ko: "캐시", en: "CASH" }, { ko: "골드", en: "GLD" },
+            { ko: "무요", en: "MUYO" }, { ko: "클래식", en: "CLS" }, { ko: "토스트", en: "TOAST" }, { ko: "네트워크", en: "NET" },
+            { ko: "프로토콜", en: "PRO" }, { ko: "체인", en: "CHN" }, { ko: "파이낸스", en: "FI" }, { ko: "스왑", en: "SWP" },
+            { ko: "스테이지", en: "STG" }, { ko: "게임", en: "GAME" }, { ko: "엘론", en: "ELON" }, { ko: "믹스", en: "MIX" },
+            { ko: "스테이션", en: "STN" }, { ko: "블록", en: "BLK" }, { ko: "박스", en: "BOX" }, { ko: "", en: "" }
+        ];
+
+        class Game {
+            constructor() {
+                this.money = CONFIG.initialMoney;
+                this.timeLeft = CONFIG.timeLimitSeconds;
+                this.stocks = []; 
+                this.portfolio = {}; 
+                this.orders = []; 
+                this.orderIdCounter = 1;
+                this.stockIdCounter = 0; 
+                
+                this.selectedStockId = null; 
+                this.selectedQtyPercent = 0.5;
+
+                this.isPlaying = false;
+                this.tickInterval = null;
+                this.timerInterval = null;
+                this.history = {}; 
+                
+                this.els = {
+                    cash: document.getElementById('cash-display'),
+                    totalProfit: document.getElementById('total-profit-display'),
+                    timer: document.getElementById('timer-display'),
+                    stockList: document.getElementById('stock-list'),
+                    selectedName: document.getElementById('selected-name'),
+                    selectedCode: document.getElementById('selected-code'),
+                    selectedPrice: document.getElementById('selected-price'),
+                    selectedChange: document.getElementById('selected-change'),
+                    holdingQty: document.getElementById('holding-qty'),
+                    portfolioTable: document.getElementById('portfolio-table'),
+                    orderList: document.getElementById('order-list'),
+                    orderPriceInput: document.getElementById('order-price-input'),
+                    introOverlay: document.getElementById('intro-overlay'),
+                    introContent: document.getElementById('intro-content'),
+                    resultModal: document.getElementById('result-modal'),
+                    modalTitle: document.getElementById('modal-title'),
+                    canvas: document.getElementById('price-chart'),
+                    toast: document.getElementById('toast'),
+                    toastMsg: document.getElementById('toast-msg')
+                };
+
+                this.ctx = this.els.canvas.getContext('2d');
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+
+                // Start Cinematic Intro
+                this.runIntro();
+            }
+
+            async runIntro() {
+                const content = this.els.introContent;
+                const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+                // Scene 1
+                content.innerHTML = `<p class="text-2xl font-bold text-white">"니들은 코인같은 거 하지 마라"</p><p class="text-sm text-gray-400 mt-4">- 무 민 -</p>`;
+                await wait(2000);
+                content.style.opacity = 0;
+                await wait(1000);
+
+                // Scene 2
+                content.style.opacity = 1;
+                content.innerHTML = `<p class="text-xl text-white font-medium">본 게임은 실화를 바탕으로 제작되었습니다.</p>`;
+                await wait(2000);
+                content.style.opacity = 0;
+                await wait(1000);
+
+                // Scene 3 (Action)
+                content.style.opacity = 1;
+                content.innerHTML = `
+                    <div class="space-y-8">
+                        <p class="text-3xl text-white beast-font tracking-wide">"점심시간동안 돈을 벌어보자"</p>
+                        
+                        <div class="bg-gray-900/80 p-5 rounded-xl text-left text-sm border border-gray-700 space-y-3 mx-auto max-w-xs backdrop-blur-sm">
+                            <p class="text-red-500 font-bold border-b border-gray-700 pb-2">생존 수칙</p>
+                            <ul class="space-y-2 text-gray-300">
+                                <li>1. 시드머니 <span class="text-yellow-400 font-bold">100만원</span></li>
+                                <li>2. 4분 뒤 <span class="text-green-400 font-bold">최종 자산</span>으로 점심 결정</li>
+                                <li>3. <span class="text-red-500 font-bold">300원 미만</span> 즉시 상장폐지</li>
+                            </ul>
+                        </div>
+
+                        <button onclick="game.start()" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-red-600 font-lg rounded-lg hover:bg-red-500 focus:outline-none ring-offset-2 focus:ring-2 ring-red-400">
+                            <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+                            <span class="relative text-xl">드가자~</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            start() {
+                // Fade out intro overlay
+                this.els.introOverlay.style.opacity = 0;
+                setTimeout(() => {
+                    this.els.introOverlay.style.display = 'none';
+                }, 1000);
+
+                this.resetAndStartGameLogic();
+            }
+
+            resetAndStart() {
+                this.els.resultModal.style.display = 'none';
+                this.resetAndStartGameLogic();
+            }
+
+            resetAndStartGameLogic() {
+                this.isPlaying = true;
+                this.money = CONFIG.initialMoney;
+                this.timeLeft = CONFIG.timeLimitSeconds;
+                this.initGameData();
+                
+                this.renderStockList();
+                if (this.stocks.length > 0) {
+                    this.selectStock(this.stocks[0].id);
+                }
+                this.setQuantity(0.5);
+
+                if (this.tickInterval) clearInterval(this.tickInterval);
+                if (this.timerInterval) clearInterval(this.timerInterval);
+
+                this.tickInterval = setInterval(() => this.tick(), CONFIG.tickRate);
+                this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+                this.showToast("거래소 개장! 행운을 빕니다.");
+                this.updateUI();
+            }
+
+            resizeCanvas() {
+                const rect = this.els.canvas.parentElement.getBoundingClientRect();
+                this.els.canvas.width = rect.width;
+                this.els.canvas.height = rect.height;
+                if (this.isPlaying && this.selectedStockId !== null) this.drawChart();
+            }
+
+            initGameData() {
+                this.stocks = [];
+                this.history = {};
+                this.portfolio = {};
+                this.orders = [];
+                this.stockIdCounter = 0;
+
+                INITIAL_STOCKS.forEach(template => {
+                    this.addNewStock(template);
+                });
+            }
+
+            addNewStock(template = null) {
+                const id = this.stockIdCounter++;
+                let stockData;
+
+                if (template) {
+                    stockData = { ...template };
+                } else {
+                    // 랜덤 조합 생성
+                    const prefix = NAME_PREFIXES[Math.floor(Math.random() * NAME_PREFIXES.length)];
+                    const suffix = NAME_SUFFIXES[Math.floor(Math.random() * NAME_SUFFIXES.length)];
+                    
+                    stockData = {
+                        name: prefix.ko + suffix.ko,
+                        code: `${prefix.en}${suffix.en}-KRW`,
+                        basePrice: Math.floor(300 + Math.random() * 20000),
+                        volatility: 0.03 + (Math.random() * 0.4) // 3% ~ 43% 기본 변동성
+                    };
+                }
+
+                const stock = {
+                    id: id,
+                    ...stockData,
+                    currentPrice: stockData.basePrice,
+                    prevPrice: stockData.basePrice,
+                    phase: 'normal',
+                    phaseTimer: 0,
+                    antShake: false,
+                    recoveryTimer: 0
+                };
+
+                this.stocks.push(stock);
+                this.history[id] = new Array(CONFIG.historyLength).fill(stock.basePrice);
+                this.portfolio[id] = { count: 0, avgPrice: 0 };
+                
+                return stock;
+            }
+
+            gameOver() {
+                this.isPlaying = false;
+                clearInterval(this.tickInterval);
+                clearInterval(this.timerInterval);
+                
+                const finalMoney = this.getTotalValuation();
+                const profit = finalMoney - CONFIG.initialMoney;
+                let menu = "";
+                let message = "";
+                let color = "";
+
+                if (profit < -750000) {
+                    menu = "울면서 쓰러짐";
+                    message = "엄마 미안해ㅠㅠㅠㅠ";
+                    color = "text-blue-500";
+                } else if (profit < -500000) {
+                    menu = "처참한 결과군요";
+                    message = "넌 좀 굶어라ㅋㅋ";
+                    color = "text-gray-200";
+                } else if (profit < -250000) {
+                    menu = "눈물젖은 초코파이";
+                    message = "치킨 10마리값을 날리고도 먹을게 있다니";
+                    color = "text-gray-400";
+                } else if (profit == 0) {
+                    menu = "이걸 안 해?";
+                    message = "하남자ㅉㅈ";
+                    color = "text-sky-400";
+                } else if (profit < 100000) {
+                    menu = "삼각김밥이나 먹죠";
+                    message = "요즘 삼각김밥이 2000원이 넘는다고?";
+                    color = "text-green-200";
+                } else if (profit < 500000) {
+                    menu = "늘 먹던 식당으로";
+                    message = "얼큰하네요 기분이 좋습니다";
+                    color = "text-green-400";
+                } else if (profit < 1000000) {
+                    menu = "오늘 점심은 치킨이닭!";
+                    message = "10마리를 시켜도 돈이 남아";
+                    color = "text-yellow-400";
+                } else if (profit < 3000000) {
+                    menu = "오늘 점심은 소고기나 먹을까요?";
+                    message = "옆 테이블에서 보낸 와규입니다";
+                    color = "text-yellow-600";
+                } else if (profit < 10000000) {
+                    menu = "컴퓨터를 받았습니다";
+                    message = "아무 말도 하지 않았습니다";
+                    color = "text-yellow-900";
+                }else {
+                    menu = "밥이 아니라 차를 바꿔야겠는데?";
+                    message = "밥이 문제가 아님 ㅋㅋ루";
+                    color = "text-red-500";
+                }
+
+                this.els.modalTitle.innerHTML = `<span class='${color}'>${menu}</span>`;
+                
+                document.querySelector('#modal-desc').innerHTML = `
+                    <div class="space-y-4">
+                        <p class="text-lg">${message}</p>
+                        <p class="text-2xl font-bold bg-gray-900 p-4 rounded border border-gray-700">
+                            최종 자산: <span class="${color}">${finalMoney.toLocaleString()}원</span><br>
+                            <span class="text-sm text-gray-400 font-normal">(수익: ${profit.toLocaleString()}원)</span>
+                        </p>
+                    </div>
+                `;
+                this.els.resultModal.style.display = 'flex';
+            }
+
+            updateTimer() {
+                this.timeLeft--;
+                const m = Math.floor(this.timeLeft / 60);
+                const s = this.timeLeft % 60;
+                this.els.timer.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+                if (this.timeLeft <= 0) this.gameOver();
+            }
+
+            tick() {
+                for (let i = this.stocks.length - 1; i >= 0; i--) {
+                    const stock = this.stocks[i];
+                    
+                    if (stock.currentPrice < CONFIG.delistPrice) {
+                        this.delistStock(stock, i);
+                        continue;
+                    }
+                    this.updateStockPrice(stock);
+                }
+
+                this.checkOrders();
+                this.updateUI();
+                this.drawChart();
+            }
+
+            // 파산 검사 함수
+            checkBankruptcy() {
+                if (this.getTotalValuation() < 5000) {
+                    this.gameOver();
+                }
+            }
+
+            delistStock(stock, index) {
+                this.showToast(`${stock.name} 상장폐지 확정! 자산 증발`);
+
+                if (this.portfolio[stock.id].count > 0) {
+                    this.portfolio[stock.id].count = 0;
+                    this.portfolio[stock.id].avgPrice = 0;
+                }
+
+                for (let j = this.orders.length - 1; j >= 0; j--) {
+                    const o = this.orders[j];
+                    if (o.stockId === stock.id) {
+                        if (o.type === 'buy') this.money += (o.price * o.qty);
+                        this.orders.splice(j, 1);
+                    }
+                }
+
+                const wasSelected = (this.selectedStockId === stock.id);
+
+                this.stocks.splice(index, 1);
+                delete this.history[stock.id];
+                delete this.portfolio[stock.id];
+
+                const newStock = this.addNewStock();
+                this.showToast(`[신규] ${newStock.name} 거래 시작`);
+
+                if (wasSelected) {
+                    if (this.stocks.length > 0) {
+                        this.selectStock(this.stocks[0].id);
+                    } else {
+                        this.selectStock(newStock.id);
+                    }
+                }
+
+                this.renderStockList();
+                this.renderOrders();
+                
+                this.checkBankruptcy();
+            }
+
+            updateStockPrice(stock) {
+                if (stock.phaseTimer > 0) {
+                    stock.phaseTimer--;
+                } else {
+                    const rand = Math.random();
+                    if (rand < 0.16) { 
+                        stock.phase = 'pump'; 
+                        stock.phaseTimer = 8 + Math.floor(Math.random() * 10);
+                    } else if (rand < 0.32) { 
+                        stock.phase = 'crash'; 
+                        stock.phaseTimer = 8 + Math.floor(Math.random() * 9);
+                    } else {
+                        stock.phase = 'normal';
+                        stock.phaseTimer = 4 + Math.floor(Math.random() * 8);
+                    }
+                    stock.antShake = false;
+                    stock.recoveryTimer = 0;
+                }
+
+                if (stock.phase === 'pump' && !stock.antShake && stock.recoveryTimer === 0 && Math.random() < 0.25) stock.antShake = true;
+                if (stock.phase === 'crash' && !stock.antShake && Math.random() < 0.2) stock.antShake = true;
+
+                let changePercent = (Math.random() - 0.5) * stock.volatility; 
+                
+                if (stock.recoveryTimer > 0) {
+                    changePercent = (0.2 + Math.random() * 0.25); 
+                    stock.recoveryTimer--;
+                }
+                else if (stock.phase === 'pump') {
+                    if (stock.antShake) {
+                        changePercent = -(0.2 + Math.random() * 0.15); 
+                        stock.recoveryTimer = 1 + Math.floor(Math.random() * 2);
+                    } else {
+                        changePercent += (0.05 + Math.random() * 0.1); 
+                    }
+                } else if (stock.phase === 'crash') {
+                    if (stock.antShake) {
+                        changePercent = +(0.2 + Math.random() * 0.2); 
+                    } else {
+                        changePercent -= (0.2 + Math.random() * 0.2);
+                    }
+                } else {
+                    if (Math.random() < 0.02) changePercent = (Math.random() - 0.5) * 0.3;
+                }
+
+                if (stock.antShake) stock.antShake = false;
+
+                stock.prevPrice = stock.currentPrice;
+                stock.currentPrice = Math.floor(stock.currentPrice * (1 + changePercent));
+                
+                if (stock.currentPrice < 1) stock.currentPrice = 1;
+
+                this.history[stock.id].push(stock.currentPrice);
+                if (this.history[stock.id].length > CONFIG.historyLength) {
+                    this.history[stock.id].shift();
+                }
+            }
+
+            // --- Order System ---
+            
+            setQuantity(percent) {
+                this.selectedQtyPercent = percent;
+                document.querySelectorAll('.qty-btn').forEach(b => b.classList.replace('bg-blue-600', 'bg-gray-700'));
+                document.querySelectorAll('.qty-btn').forEach(b => b.classList.replace('text-white', 'text-gray-300'));
+                
+                const activeBtn = percent === 0.5 ? document.getElementById('btn-50') : document.getElementById('btn-100');
+                activeBtn.classList.replace('bg-gray-700', 'bg-blue-600');
+                activeBtn.classList.replace('text-gray-300', 'text-white');
+            }
+
+            setOrderPriceToCurrent() {
+                const stock = this.stocks.find(s => s.id === this.selectedStockId);
+                if(stock) this.els.orderPriceInput.value = stock.currentPrice;
+            }
+
+            placeOrder(type) {
+                if (!this.isPlaying) return;
+                
+                const stock = this.stocks.find(s => s.id === this.selectedStockId);
+                if (!stock) return;
+
+                const inputPrice = parseInt(this.els.orderPriceInput.value);
+                if (!inputPrice || inputPrice <= 0) {
+                    this.showToast("가격을 올바르게 입력하세요.");
+                    return;
+                }
+
+                let qty = 0;
+                let originalAvgPrice = 0; 
+
+                if (type === 'buy') {
+                    const useMoney = Math.floor(this.money * this.selectedQtyPercent);
+                    qty = Math.floor(useMoney / inputPrice);
+                    if (qty <= 0) {
+                        this.showToast("시드가 부족합니다.");
+                        return;
+                    }
+                    // 매수 주문 즉시 돈 빠져나감 (지정가 매수)
+                    this.money -= (qty * inputPrice);
+
+                } else {
+                    const holding = this.portfolio[stock.id];
+                    if (!holding || holding.count <= 0) {
+                        this.showToast("가진 코인이 없습니다.");
+                        return;
+                    }
+                    
+                    qty = Math.ceil(holding.count * this.selectedQtyPercent);
+                    if (qty <= 0) return;
+                    
+                    originalAvgPrice = holding.avgPrice;
+
+                    holding.count -= qty;
+                    if (holding.count === 0) holding.avgPrice = 0; 
+                }
+
+                const order = {
+                    id: this.orderIdCounter++,
+                    stockId: stock.id,
+                    stockName: stock.name,
+                    type: type,
+                    price: inputPrice,
+                    qty: qty,
+                    originalAvgPrice: originalAvgPrice, 
+                    time: new Date()
+                };
+
+                this.orders.push(order);
+                this.showToast(`${type === 'buy'?'매수':'매도'} 주문: ${qty}주`);
+                this.renderOrders();
+                this.updateUI(); 
+                this.checkOrders();
+            }
+
+            checkOrders() {
+                for (let i = this.orders.length - 1; i >= 0; i--) {
+                    const order = this.orders[i];
+                    const stock = this.stocks.find(s => s.id === order.stockId);
+                    
+                    if (!stock) {
+                        this.orders.splice(i, 1);
+                        continue;
+                    }
+
+                    const currentPrice = stock.currentPrice;
+                    let executed = false;
+
+                    if (order.type === 'buy') {
+                        if (currentPrice <= order.price) {
+                            const actualCost = currentPrice * order.qty;
+                            // 지정가 매수이므로 예약된 돈(order.price)을 그대로 사용
+                            const reservedCost = order.price * order.qty;
+                            
+                            const p = this.portfolio[stock.id];
+                            const totalVal = (p.count * p.avgPrice) + reservedCost;
+                            p.count += order.qty;
+                            p.avgPrice = Math.floor(totalVal / p.count);
+                            
+                            executed = true;
+                            this.showToast(`[체결] ${stock.name} 매수 완료`);
+                        }
+                    } else {
+                        if (currentPrice >= order.price) {
+                            const gain = order.price * order.qty;
+                            this.money += gain;
+                            executed = true;
+                            this.showToast(`[체결] ${stock.name} 매도 완료`);
+                            
+                            setTimeout(() => this.checkBankruptcy(), 0);
+                        }
+                    }
+
+                    if (executed) {
+                        this.orders.splice(i, 1);
+                        this.renderOrders();
+                        this.flashEffect(order.type);
+                    }
+                }
+            }
+
+            cancelOrder(id) {
+                const idx = this.orders.findIndex(o => o.id === id);
+                if (idx === -1) return;
+                
+                const order = this.orders[idx];
+                
+                if (order.type === 'buy') {
+                    // 매수 취소 시 돈 환불
+                    this.money += (order.price * order.qty);
+                } else {
+                    const p = this.portfolio[order.stockId];
+                    if (p) {
+                        const currentVal = p.count * p.avgPrice;
+                        const returnedVal = order.qty * order.originalAvgPrice;
+                        
+                        p.count += order.qty;
+                        if (p.count > 0) {
+                             p.avgPrice = Math.floor((currentVal + returnedVal) / p.count);
+                        }
+                    }
+                }
+
+                this.orders.splice(idx, 1);
+                this.renderOrders();
+                this.updateUI();
+                this.showToast("주문이 취소되었습니다.");
+            }
+
+            // --- UI Updates ---
+
+            showToast(msg) {
+                this.els.toastMsg.textContent = msg;
+                this.els.toast.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    this.els.toast.classList.add('opacity-0', 'pointer-events-none');
+                }, 1500);
+            }
+
+            flashEffect(type) {
+                const el = this.els.canvas.parentElement;
+                const colorClass = type === 'buy' ? 'blink-red' : 'blink-blue';
+                el.classList.add(colorClass);
+                setTimeout(() => el.classList.remove(colorClass), 300);
+            }
+
+            selectStock(id) {
+                const stock = this.stocks.find(s => s.id === id);
+                if (!stock) return;
+
+                this.selectedStockId = id;
+                
+                this.renderStockList(); 
+
+                this.els.selectedName.textContent = stock.name;
+                this.els.selectedCode.textContent = stock.code;
+                this.els.orderPriceInput.value = stock.currentPrice;
+                
+                this.drawChart();
+                this.updateSelectedInfo();
+            }
+
+            updateUI() {
+                this.els.cash.textContent = Math.floor(this.money).toLocaleString();
+                
+                const totalVal = this.getTotalValuation();
+                const profit = totalVal - CONFIG.initialMoney;
+                this.els.totalProfit.textContent = `${profit > 0 ? '+' : ''}${profit.toLocaleString()}`;
+                this.els.totalProfit.className = `font-mono font-bold text-xl ${profit > 0 ? 'text-red-400' : (profit < 0 ? 'text-blue-400' : 'text-gray-400')}`;
+
+                this.stocks.forEach(s => {
+                    const el = document.getElementById(`stock-item-${s.id}`);
+                    if (el) {
+                        const priceEl = el.querySelector('.price');
+                        const changeEl = el.querySelector('.change');
+                        
+                        priceEl.textContent = s.currentPrice.toLocaleString();
+                        const change = ((s.currentPrice - s.basePrice) / s.basePrice) * 100;
+                        changeEl.textContent = `${change > 0 ? '+' : ''}${change.toFixed(2)}%`;
+                        
+                        const colorClass = change > 0 ? 'up-color' : (change < 0 ? 'down-color' : 'text-gray-400');
+                        priceEl.className = `price font-mono font-bold text-sm ${colorClass}`;
+                        changeEl.className = `change text-[10px] ${colorClass}`;
+                        
+                        if (s.currentPrice < CONFIG.delistPrice + 200) {
+                            el.classList.add('border-red-500');
+                        } else {
+                            el.classList.remove('border-red-500');
+                        }
+                    }
+                });
+
+                if (this.selectedStockId !== null) this.updateSelectedInfo();
+                this.renderPortfolio();
+            }
+
+            updateSelectedInfo() {
+                const s = this.stocks.find(st => st.id === this.selectedStockId);
+                if (!s) return; 
+
+                const p = this.portfolio[s.id];
+
+                this.els.selectedPrice.textContent = s.currentPrice.toLocaleString();
+                const change = ((s.currentPrice - s.basePrice) / s.basePrice) * 100;
+                this.els.selectedChange.textContent = `${change > 0 ? '▲' : '▼'} ${Math.abs(change).toFixed(2)}%`;
+                this.els.selectedPrice.className = `text-2xl font-mono font-bold leading-none ${change > 0 ? 'up-color' : 'down-color'}`;
+                this.els.selectedChange.className = `text-xs font-bold text-right ${change > 0 ? 'up-color' : 'down-color'}`;
+
+                this.els.holdingQty.textContent = p ? p.count.toLocaleString() : 0;
+            }
+
+            renderStockList() {
+                this.els.stockList.innerHTML = '';
+                this.stocks.forEach(s => {
+                    const div = document.createElement('div');
+                    div.id = `stock-item-${s.id}`;
+                    div.className = `stock-item p-2 rounded bg-gray-800 hover:bg-gray-700 cursor-pointer transition flex justify-between items-center border ${s.id === this.selectedStockId ? 'border-l-4 border-yellow-400 bg-gray-700' : 'border-gray-700'}`;
+                    div.onclick = () => this.selectStock(s.id);
+                    
+                    const change = ((s.currentPrice - s.basePrice) / s.basePrice) * 100;
+                    const colorClass = change > 0 ? 'up-color' : (change < 0 ? 'down-color' : 'text-gray-400');
+
+                    div.innerHTML = `
+                        <div>
+                            <div class="font-bold text-xs text-gray-300">${s.name}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="price font-mono font-bold text-sm ${colorClass}">${s.currentPrice.toLocaleString()}</div>
+                            <div class="change text-[10px] ${colorClass}">${change.toFixed(2)}%</div>
+                        </div>
+                    `;
+                    this.els.stockList.appendChild(div);
+                });
+            }
+
+            renderOrders() {
+                this.els.orderList.innerHTML = '';
+                if (this.orders.length === 0) {
+                    this.els.orderList.innerHTML = '<div class="text-center text-gray-600 text-xs mt-4">대기 중인 주문이 없습니다.</div>';
+                    return;
+                }
+
+                [...this.orders].reverse().forEach(o => {
+                    const div = document.createElement('div');
+                    const typeText = o.type === 'buy' ? '매수' : '매도';
+                    const color = o.type === 'buy' ? 'text-red-400' : 'text-blue-400';
+                    
+                    div.className = "flex justify-between items-center bg-gray-900 p-2 rounded border border-gray-700 text-xs";
+                    div.innerHTML = `
+                        <div>
+                            <div class="font-bold text-gray-300">${o.stockName} <span class="${color}">${typeText}</span></div>
+                            <div class="text-gray-500 font-mono">${o.price.toLocaleString()}원 | ${o.qty}개</div>
+                        </div>
+                        <button onclick="game.cancelOrder(${o.id})" class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded text-[10px]">취소</button>
+                    `;
+                    this.els.orderList.appendChild(div);
+                });
+            }
+
+            renderPortfolio() {
+                this.els.portfolioTable.innerHTML = '';
+                this.stocks.forEach(s => {
+                    const p = this.portfolio[s.id];
+                    if (p && p.count > 0) {
+                        const tr = document.createElement('tr');
+                        tr.className = "hover:bg-gray-700 transition border-b border-gray-700 last:border-0";
+                        tr.onclick = () => this.selectStock(s.id);
+
+                        const totalBuy = p.count * p.avgPrice;
+                        const totalVal = p.count * s.currentPrice;
+                        const profit = totalVal - totalBuy;
+                        const profitRate = totalBuy > 0 ? (profit / totalBuy) * 100 : 0;
+                        
+                        const color = profit > 0 ? 'text-red-400' : (profit < 0 ? 'text-blue-400' : 'text-gray-400');
+                        const sign = profit > 0 ? '+' : '';
+                        
+                        tr.innerHTML = `
+                            <td class="p-3 font-bold text-gray-200">${s.name}</td>
+                            <td class="p-3 text-right font-mono text-gray-400">${p.count.toLocaleString()}</td>
+                            <td class="p-3 text-right font-mono text-gray-400">${p.avgPrice.toLocaleString()}</td>
+                            <td class="p-3 text-right font-mono text-gray-300">${totalBuy.toLocaleString()}</td>
+                            <td class="p-3 text-right font-mono font-bold ${color}">
+                                <div>${sign}${profit.toLocaleString()}</div>
+                                <div class="text-xs opacity-75">${profitRate.toFixed(2)}%</div>
+                            </td>
+                        `;
+                        this.els.portfolioTable.appendChild(tr);
+                    }
+                });
+            }
+
+            getTotalValuation() {
+                let stockVal = 0;
+                this.stocks.forEach(s => {
+                    if(this.portfolio[s.id]) {
+                        stockVal += this.portfolio[s.id].count * s.currentPrice;
+                    }
+                });
+                
+                let orderEscrow = 0;
+                this.orders.forEach(o => {
+                    if (o.type === 'buy') orderEscrow += (o.price * o.qty);
+                });
+                
+                return Math.floor(this.money + orderEscrow + stockVal);
+            }
+
+            drawChart() {
+                if (!this.els.canvas || this.selectedStockId === null) return;
+                const ctx = this.ctx;
+                const w = this.els.canvas.width;
+                const h = this.els.canvas.height;
+                const history = this.history[this.selectedStockId];
+                
+                if (!history) return; 
+
+                ctx.fillStyle = '#111827';
+                ctx.fillRect(0,0,w,h);
+                
+                ctx.strokeStyle = '#374151'; 
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                for(let i=1; i<4; i++) {
+                    const y = h * (i/4);
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                }
+                ctx.stroke();
+
+                let min = Math.min(...history);
+                let max = Math.max(...history);
+                const padding = (max - min) * 0.3; 
+                min -= padding;
+                max += padding;
+                
+                if (min > CONFIG.delistPrice && min < CONFIG.delistPrice + 500) {
+                     min = CONFIG.delistPrice - 50;
+                }
+                
+                if (min === max) { max += 10; min -= 10; } 
+
+                const mapY = (val) => h - ((val - min) / (max - min)) * h;
+
+                const delistY = mapY(CONFIG.delistPrice);
+                if (delistY < h && delistY > 0) {
+                    ctx.fillStyle = 'rgba(220, 38, 38, 0.1)'; 
+                    ctx.fillRect(0, delistY, w, h - delistY);
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.setLineDash([4, 4]);
+                    ctx.moveTo(0, delistY);
+                    ctx.lineTo(w, delistY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = '#ef4444';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText('상장폐지 라인 (300원)', 5, delistY - 5);
+                }
+
+                const lineColor = history[history.length-1] >= history[0] ? '#ff4d4d' : '#4d79ff';
+                
+                ctx.beginPath();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = lineColor;
+                ctx.lineJoin = 'round';
+
+                const step = w / (CONFIG.historyLength - 1);
+                
+                history.forEach((p, i) => {
+                    const x = i * step;
+                    const y = mapY(p);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, lineColor + '33'); 
+                grad.addColorStop(1, lineColor + '00'); 
+                
+                ctx.lineTo(w, h);
+                ctx.lineTo(0, h);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                const sId = this.selectedStockId;
+                this.orders.forEach(o => {
+                    if (o.stockId === sId) {
+                        const y = mapY(o.price);
+                        if (y >= 0 && y <= h) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = o.type === 'buy' ? '#f87171' : '#60a5fa'; 
+                            ctx.lineWidth = 1;
+                            ctx.setLineDash([2, 2]);
+                            ctx.moveTo(0, y);
+                            ctx.lineTo(w, y);
+                            ctx.stroke();
+                            ctx.setLineDash([]);
+                        }
+                    }
+                });
+
+                const lastY = mapY(history[history.length-1]);
+                ctx.beginPath();
+                ctx.arc(w - 4, lastY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.fill();
+            }
+        }
+
+        const game = new Game();
+    </script>
+</body>
+</html>
