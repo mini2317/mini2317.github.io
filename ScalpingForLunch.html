@@ -13,7 +13,7 @@
             font-family: 'Noto Sans KR', sans-serif;
             background-color: #111827; /* Dark bg */
             color: #e5e7eb;
-            overflow: hidden; /* No scrolling */
+            overflow: hidden; /* PC Default: No scrolling */
         }
 
         /* Custom Scrollbar */
@@ -49,7 +49,7 @@
             100% { background-color: transparent; }
         }
 
-        /* Grid Layout */
+        /* Grid Layout (PC Default) */
         .game-grid {
             display: grid;
             grid-template-columns: 280px 1fr 300px;
@@ -59,12 +59,58 @@
             padding: 0.75rem;
         }
         
+        /* Mobile & Tablet Layout Adjustment */
         @media (max-width: 1024px) {
+            body {
+                overflow-y: auto; /* 모바일에서는 스크롤 허용 */
+                overflow-x: hidden;
+            }
+
             .game-grid {
-                grid-template-columns: 1fr;
-                grid-template-rows: repeat(4, auto);
-                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
                 height: auto;
+                min-height: calc(100vh - 70px);
+                padding-bottom: 2rem; /* 하단 여유 공간 */
+            }
+
+            /* 모바일 배치 순서 변경 (Flex Order) */
+            /* DOM 순서: 1.리스트, 2.차트, 3.주문, 4.포트폴리오 */
+            
+            /* 1. 차트 (가장 중요) */
+            .game-grid > section:nth-child(2) {
+                order: 1;
+                height: 300px; /* 차트 높이 확보 */
+                flex: none;
+            }
+
+            /* 2. 주문 패널 */
+            .game-grid > section:nth-child(3) {
+                order: 2;
+                flex: none;
+            }
+
+            /* 3. 포트폴리오 (내 돈 현황) */
+            .game-grid > section:nth-child(4) {
+                order: 3;
+                height: 200px;
+                flex: none;
+            }
+
+            /* 4. 종목 리스트 (맨 아래로) */
+            .game-grid > section:nth-child(1) {
+                order: 4;
+                height: 250px;
+                flex: none;
+                margin-bottom: 20px;
+            }
+
+            /* 헤더 폰트 사이즈 조정 */
+            header h1 {
+                font-size: 1.1rem;
+            }
+            header .text-xl {
+                font-size: 1rem;
             }
         }
         
@@ -88,27 +134,27 @@
 <body>
 
     <!-- Header -->
-    <header class="h-[70px] bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6 shadow-lg z-10 relative">
+    <header class="h-[70px] bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 lg:px-6 shadow-lg z-10 relative sticky top-0">
         <div class="flex flex-col">
             <span class="text-gray-400 text-[10px] font-bold tracking-wider">맛있는 점심을 위한 여정</span>
             <h1 class="text-xl text-white leading-tight beast-font tracking-widest">점심시간에 코인하기</h1>
         </div>
 
         <!-- Stats Bar -->
-        <div class="flex gap-6 text-sm bg-gray-900 px-6 py-2 rounded-lg border border-gray-700 shadow-inner items-center">
+        <div class="flex gap-3 lg:gap-6 text-sm bg-gray-900 px-3 lg:px-6 py-2 rounded-lg border border-gray-700 shadow-inner items-center">
             <div class="flex flex-col items-end">
                 <span class="text-gray-500 text-[10px]">가용 현금</span>
-                <span id="cash-display" class="font-mono font-bold text-yellow-400 text-xl">0</span>
+                <span id="cash-display" class="font-mono font-bold text-yellow-400 text-lg lg:text-xl">0</span>
             </div>
-            <div class="w-px h-8 bg-gray-700"></div>
-            <div class="flex flex-col items-end">
+            <div class="w-px h-8 bg-gray-700 hidden sm:block"></div>
+            <div class="flex flex-col items-end hidden sm:flex">
                 <span class="text-gray-500 text-[10px]">평가 손익</span>
-                <span id="total-profit-display" class="font-mono font-bold text-white text-xl">0</span>
+                <span id="total-profit-display" class="font-mono font-bold text-white text-lg lg:text-xl">0</span>
             </div>
             <div class="w-px h-8 bg-gray-700"></div>
-            <div class="flex flex-col items-end justify-center min-w-[60px]">
+            <div class="flex flex-col items-end justify-center min-w-[50px]">
                 <span class="text-gray-500 text-[10px] mb-0.5">남은 시간</span>
-                <span id="timer-display" class="font-mono font-bold text-red-500 text-2xl leading-none">00:00</span>
+                <span id="timer-display" class="font-mono font-bold text-red-500 text-xl lg:text-2xl leading-none">00:00</span>
             </div>
         </div>
     </header>
@@ -116,7 +162,7 @@
     <!-- Main Layout -->
     <main class="game-grid">
         
-        <!-- 1. Stock List (Left) -->
+        <!-- 1. Stock List (Left on PC, Bottom on Mobile) -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-2">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 flex justify-between items-center text-sm">
                 <span>실시간 시세</span>
@@ -126,7 +172,7 @@
             </div>
         </section>
 
-        <!-- 2. Chart (Center) -->
+        <!-- 2. Chart (Center on PC, Top on Mobile) -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-1 relative">
             <!-- Chart Header -->
             <div class="px-4 py-2 bg-gray-900 border-b border-gray-700 flex justify-between items-center h-14">
@@ -148,7 +194,7 @@
             </div>
         </section>
 
-        <!-- 3. Order Panel (Right) -->
+        <!-- 3. Order Panel (Right on PC, Middle on Mobile) -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-2">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-sm">
                 주문
@@ -191,7 +237,7 @@
             </div>
 
             <!-- Active Orders List -->
-            <div class="flex-1 flex flex-col overflow-hidden">
+            <div class="flex-1 flex flex-col overflow-hidden min-h-[150px]">
                 <div class="px-3 py-2 bg-gray-900/50 text-xs text-gray-500 font-bold border-b border-gray-700">
                     미체결 주문 현황
                 </div>
@@ -201,7 +247,7 @@
             </div>
         </section>
 
-        <!-- 4. Portfolio (Bottom Center) -->
+        <!-- 4. Portfolio (Bottom Center on PC, Bottom on Mobile) -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-1">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-xs flex justify-between">
                 <span>포트폴리오</span>
@@ -234,8 +280,8 @@
 
     <!-- RESULT MODAL -->
     <div id="result-modal" class="fixed inset-0 bg-black/90 z-40 flex items-center justify-center backdrop-blur-sm" style="display: none;">
-        <div class="bg-gray-800 p-8 rounded-2xl border border-gray-600 max-w-md w-full text-center shadow-2xl transform transition-all scale-100">
-            <h2 id="modal-title" class="text-4xl text-white mb-2 tracking-tighter beast-font text-red-500">게임 종료</h2>
+        <div class="bg-gray-800 p-8 rounded-2xl border border-gray-600 max-w-md w-full text-center shadow-2xl transform transition-all scale-100 mx-4">
+            <h2 id="modal-title" class="text-3xl lg:text-4xl text-white mb-2 tracking-tighter beast-font text-red-500">게임 종료</h2>
             <div id="modal-desc" class="my-6 space-y-4 text-sm text-gray-300">
                 <!-- Result Content -->
             </div>
@@ -246,7 +292,7 @@
     </div>
 
     <!-- Notification Toast -->
-    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl border border-gray-600 opacity-0 pointer-events-none transition-opacity duration-300 z-50 font-bold text-sm flex items-center gap-2 text-center">
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl border border-gray-600 opacity-0 pointer-events-none transition-opacity duration-300 z-50 font-bold text-sm flex items-center gap-2 text-center w-max max-w-[90%]">
         <span id="toast-msg">메시지</span>
     </div>
 
@@ -342,14 +388,14 @@
                 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 
                 // Scene 1
-                content.innerHTML = `<p class="text-2xl font-bold text-white">"니들은 코인같은 거 하지 마라"</p><p class="text-sm text-gray-400 mt-4">- 무 민 -</p>`;
+                content.innerHTML = `<p class="text-xl lg:text-2xl font-bold text-white">"니들은 코인같은 거 하지 마라"</p><p class="text-sm text-gray-400 mt-4">- 무 민 -</p>`;
                 await wait(2000);
                 content.style.opacity = 0;
                 await wait(1000);
 
                 // Scene 2
                 content.style.opacity = 1;
-                content.innerHTML = `<p class="text-xl text-white font-medium">본 게임은 실화를 바탕으로 제작되었습니다.</p>`;
+                content.innerHTML = `<p class="text-lg lg:text-xl text-white font-medium">본 게임은 실화를 바탕으로 제작되었습니다.</p>`;
                 await wait(2000);
                 content.style.opacity = 0;
                 await wait(1000);
@@ -357,8 +403,8 @@
                 // Scene 3 (Action)
                 content.style.opacity = 1;
                 content.innerHTML = `
-                    <div class="space-y-8">
-                        <p class="text-3xl text-white beast-font tracking-wide">"점심시간동안 돈을 벌어보자"</p>
+                    <div class="space-y-6 lg:space-y-8">
+                        <p class="text-2xl lg:text-3xl text-white beast-font tracking-wide">"점심시간동안 돈을 벌어보자"</p>
                         
                         <div class="bg-gray-900/80 p-5 rounded-xl text-left text-sm border border-gray-700 space-y-3 mx-auto max-w-xs backdrop-blur-sm">
                             <p class="text-red-500 font-bold border-b border-gray-700 pb-2">생존 수칙</p>
@@ -853,7 +899,7 @@
                 const totalVal = this.getTotalValuation();
                 const profit = totalVal - CONFIG.initialMoney;
                 this.els.totalProfit.textContent = `${profit > 0 ? '+' : ''}${profit.toLocaleString()}`;
-                this.els.totalProfit.className = `font-mono font-bold text-xl ${profit > 0 ? 'text-red-400' : (profit < 0 ? 'text-blue-400' : 'text-gray-400')}`;
+                this.els.totalProfit.className = `font-mono font-bold text-lg lg:text-xl ${profit > 0 ? 'text-red-400' : (profit < 0 ? 'text-blue-400' : 'text-gray-400')}`;
 
                 this.stocks.forEach(s => {
                     const el = document.getElementById(`stock-item-${s.id}`);
