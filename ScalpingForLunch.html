@@ -205,9 +205,9 @@
                     </div>
                     <!-- Quick Action Buttons -->
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="game.adjustPrice(-10)" class="bg-gray-700 hover:bg-blue-900/50 text-blue-400 border border-gray-600 rounded py-2 text-xs font-bold transition">-10%</button>
+                        <button onclick="game.adjustPrice(-25)" class="bg-gray-700 hover:bg-blue-900/50 text-blue-400 border border-gray-600 rounded py-2 text-xs font-bold transition">-25%</button>
                         <button onclick="game.setOrderPriceToCurrent()" class="bg-gray-700 hover:bg-gray-600 text-white border border-gray-600 rounded py-2 text-xs font-bold transition">현재가</button>
-                        <button onclick="game.adjustPrice(10)" class="bg-gray-700 hover:bg-red-900/50 text-red-400 border border-gray-600 rounded py-2 text-xs font-bold transition">+10%</button>
+                        <button onclick="game.adjustPrice(25)" class="bg-gray-700 hover:bg-red-900/50 text-red-400 border border-gray-600 rounded py-2 text-xs font-bold transition">+25%</button>
                     </div>
                 </div>
 
@@ -741,11 +741,11 @@
                     } else if (r < 0.5) {
                         stock.phase = 'accumulation'; // 매집 (30%) - 가격 가두기
                         stock.phaseTimer = 15 + Math.floor(Math.random() * 15);
-                    } else if (r < 0.75) {
-                        stock.phase = 'pump'; // 작전 개시 (상승) (15%)
-                        stock.phaseTimer = 10 + Math.floor(Math.random() * 10);
+                    } else if (r < 0.7) {
+                        stock.phase = 'pump'; // 작전 개시 (상승) (20%)
+                        stock.phaseTimer = 9 + Math.floor(Math.random() * 9);
                     } else {
-                        stock.phase = 'dump'; // 설거지 (하락) (15%)
+                        stock.phase = 'dump'; // 설거지 (하락) (30%)
                         stock.phaseTimer = 10 + Math.floor(Math.random() * 10);
                     }
                 }
@@ -764,12 +764,12 @@
                         force = (Math.random() * 0.004) - 0.001;
                         let d = Math.random();
                         if (d < 0.05) stock.phase = 'dump';
-                        else if (d < 0.05) stock.phase = 'pump'; 
+                        else if (d < 0.075) stock.phase = 'pump'; 
                         volatility *= 0.5;
                         break;
                     case 'pump':
                         // 펌핑: 강력한 상승세, 중간중간 조정(개미털기)
-                        force = 0.1 + (Math.random() * 0.15); 
+                        force = 0.08 + (Math.random() * 0.15); 
                         if (Math.random() < 0.4) force = -0.09 - Math.random() * 0.05; // 20% 확률로 급락 (개미털기)
                         if (Math.random() < 0.02) stock.phase = 'dump';
                         volatility *= 2.0;
@@ -778,7 +778,7 @@
                         // 덤핑: 강력한 하락세, 중간중간 반등(데드캣)
                         force = -0.1 - (Math.random() * 0.15);
                         if (Math.random() < 0.4) force = 0.1 + Math.random() * 0.15; // 20% 확률로 반등 (설거지)
-                        if (Math.random() < 0.02) stock.phase = 'pump';
+                        if (Math.random() < 0.01) stock.phase = 'pump';
                         volatility *= 4.0;
                         break;
                 }
