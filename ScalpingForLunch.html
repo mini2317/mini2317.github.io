@@ -14,6 +14,7 @@
             background-color: #111827; /* Dark bg */
             color: #e5e7eb;
             overflow: hidden; /* PC Default: No scrolling */
+            user-select: none; /* 드래그 방지 */
         }
 
         /* Custom Scrollbar */
@@ -52,7 +53,7 @@
         /* Grid Layout (PC Default) */
         .game-grid {
             display: grid;
-            grid-template-columns: 280px 1fr 300px;
+            grid-template-columns: 280px 1fr 320px; /* 우측 패널 너비 약간 증가 */
             grid-template-rows: 1fr 200px;
             gap: 0.75rem;
             height: calc(100vh - 70px);
@@ -62,7 +63,7 @@
         /* Mobile & Tablet Layout Adjustment */
         @media (max-width: 1024px) {
             body {
-                overflow-y: auto; /* 모바일에서는 스크롤 허용 */
+                overflow-y: auto; 
                 overflow-x: hidden;
             }
 
@@ -71,47 +72,38 @@
                 flex-direction: column;
                 height: auto;
                 min-height: calc(100vh - 70px);
-                padding-bottom: 2rem; /* 하단 여유 공간 */
+                padding-bottom: 2rem; 
             }
 
-            /* 모바일 배치 순서 변경 (Flex Order) */
             /* DOM 순서: 1.리스트, 2.차트, 3.주문, 4.포트폴리오 */
+            /* 모바일 우선순위: 차트 > 주문 > 내돈 > 리스트 */
             
-            /* 1. 차트 (가장 중요) */
-            .game-grid > section:nth-child(2) {
+            .game-grid > section:nth-child(2) { /* 차트 */
                 order: 1;
-                height: 300px; /* 차트 높이 확보 */
+                height: 300px; 
                 flex: none;
             }
 
-            /* 2. 주문 패널 */
-            .game-grid > section:nth-child(3) {
+            .game-grid > section:nth-child(3) { /* 주문 */
                 order: 2;
                 flex: none;
             }
 
-            /* 3. 포트폴리오 (내 돈 현황) */
-            .game-grid > section:nth-child(4) {
+            .game-grid > section:nth-child(4) { /* 포트폴리오 */
                 order: 3;
                 height: 200px;
                 flex: none;
             }
 
-            /* 4. 종목 리스트 (맨 아래로) */
-            .game-grid > section:nth-child(1) {
+            .game-grid > section:nth-child(1) { /* 리스트 */
                 order: 4;
                 height: 250px;
                 flex: none;
                 margin-bottom: 20px;
             }
 
-            /* 헤더 폰트 사이즈 조정 */
-            header h1 {
-                font-size: 1.1rem;
-            }
-            header .text-xl {
-                font-size: 1rem;
-            }
+            header h1 { font-size: 1.1rem; }
+            header .text-xl { font-size: 1rem; }
         }
         
         input[type="number"]::-webkit-inner-spin-button,
@@ -134,7 +126,7 @@
 <body>
 
     <!-- Header -->
-    <header class="h-[70px] bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 lg:px-6 shadow-lg z-10 relative sticky top-0">
+    <header class="h-[70px] bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4 lg:px-6 shadow-lg z-10 sticky top-0">
         <div class="flex flex-col">
             <span class="text-gray-400 text-[10px] font-bold tracking-wider">맛있는 점심을 위한 여정</span>
             <h1 class="text-xl text-white leading-tight beast-font tracking-widest">점심시간에 코인하기</h1>
@@ -162,7 +154,7 @@
     <!-- Main Layout -->
     <main class="game-grid">
         
-        <!-- 1. Stock List (Left on PC, Bottom on Mobile) -->
+        <!-- 1. Coin List -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-2">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 flex justify-between items-center text-sm">
                 <span>실시간 시세</span>
@@ -172,7 +164,7 @@
             </div>
         </section>
 
-        <!-- 2. Chart (Center on PC, Top on Mobile) -->
+        <!-- 2. Chart -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-1 relative">
             <!-- Chart Header -->
             <div class="px-4 py-2 bg-gray-900 border-b border-gray-700 flex justify-between items-center h-14">
@@ -194,52 +186,58 @@
             </div>
         </section>
 
-        <!-- 3. Order Panel (Right on PC, Middle on Mobile) -->
+        <!-- 3. Order Panel -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col shadow-lg col-span-1 row-span-2">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-sm">
                 주문
             </div>
             
             <!-- Order Form -->
-            <div class="p-3 flex flex-col gap-3 border-b border-gray-700 bg-gray-800">
-                <!-- Price Input -->
+            <div class="p-4 flex flex-col gap-3 border-b border-gray-700 bg-gray-800">
+                <!-- Price Input & Quick Buttons -->
                 <div>
                     <div class="flex justify-between text-xs text-gray-400 mb-1">
                         <span>주문 가격</span>
-                        <button onclick="game.setOrderPriceToCurrent()" class="text-blue-400 hover:text-blue-300 underline">현재가 적용</button>
                     </div>
-                    <div class="relative">
-                        <input id="order-price-input" type="number" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-right font-mono text-lg text-white focus:border-blue-500 outline-none" placeholder="가격 입력">
-                        <span class="absolute left-2 top-2.5 text-gray-500 text-xs">₩</span>
+                    <div class="relative mb-2">
+                        <input id="order-price-input" type="number" class="w-full bg-gray-900 border border-gray-600 rounded p-3 text-right font-mono text-xl text-white focus:border-blue-500 outline-none transition shadow-inner" placeholder="가격 입력">
+                        <span class="absolute left-3 top-3.5 text-gray-500 text-sm">₩</span>
+                    </div>
+                    <!-- Quick Action Buttons -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="game.adjustPrice(-10)" class="bg-gray-700 hover:bg-blue-900/50 text-blue-400 border border-gray-600 rounded py-2 text-xs font-bold transition">-10%</button>
+                        <button onclick="game.setOrderPriceToCurrent()" class="bg-gray-700 hover:bg-gray-600 text-white border border-gray-600 rounded py-2 text-xs font-bold transition">현재가</button>
+                        <button onclick="game.adjustPrice(10)" class="bg-gray-700 hover:bg-red-900/50 text-red-400 border border-gray-600 rounded py-2 text-xs font-bold transition">+10%</button>
                     </div>
                 </div>
 
                 <!-- Quantity Select -->
                 <div>
                     <div class="flex justify-between text-xs text-gray-400 mb-1">
-                        <span>주문 수량 (보유: <span id="holding-qty" class="text-white">0</span>개)</span>
+                        <span>주문 수량 (보유: <span id="holding-qty" class="text-white font-bold">0</span>개)</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="game.setQuantity(0.5)" id="btn-50" class="qty-btn py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">50%</button>
-                        <button onclick="game.setQuantity(1.0)" id="btn-100" class="qty-btn py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">100%</button>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <button onclick="game.setQuantity(0.5)" id="btn-50" class="qty-btn py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">50%</button>
+                        <button onclick="game.setQuantity(1.0)" id="btn-100" class="qty-btn py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs font-bold border border-gray-600 transition">100%</button>
                     </div>
                 </div>
 
-                <!-- Buy/Sell Buttons -->
-                <div class="grid grid-cols-2 gap-2 mt-1">
-                    <button onclick="game.placeOrder('buy')" class="bg-red-900/30 hover:bg-red-600 border border-red-600 text-red-500 hover:text-white py-3 rounded font-bold text-sm transition active:scale-95">
-                        매수 주문
+                <!-- Buy/Sell Buttons (Moved closer) -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="game.placeOrder('buy')" class="bg-red-600 hover:bg-red-500 text-white py-4 rounded-lg font-black text-lg shadow-lg transition transform active:scale-95 border-b-4 border-red-800 hover:border-red-700 active:border-b-0 active:translate-y-1">
+                        매수
                     </button>
-                    <button onclick="game.placeOrder('sell')" class="bg-blue-900/30 hover:bg-blue-600 border border-blue-600 text-blue-500 hover:text-white py-3 rounded font-bold text-sm transition active:scale-95">
-                        매도 주문
+                    <button onclick="game.placeOrder('sell')" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-lg font-black text-lg shadow-lg transition transform active:scale-95 border-b-4 border-blue-800 hover:border-blue-700 active:border-b-0 active:translate-y-1">
+                        매도
                     </button>
                 </div>
             </div>
 
             <!-- Active Orders List -->
-            <div class="flex-1 flex flex-col overflow-hidden min-h-[150px]">
-                <div class="px-3 py-2 bg-gray-900/50 text-xs text-gray-500 font-bold border-b border-gray-700">
-                    미체결 주문 현황
+            <div class="flex-1 min-h-[100px] flex flex-col overflow-hidden bg-gray-900/30">
+                <div class="px-3 py-2 bg-gray-900 border-b border-t border-gray-700 text-[10px] text-gray-400 font-bold uppercase tracking-wider flex justify-between items-center">
+                    <span>미체결 주문</span>
+                    <span class="text-gray-600">Pending Orders</span>
                 </div>
                 <div id="order-list" class="flex-1 overflow-y-auto p-2 space-y-2">
                     <!-- Orders go here -->
@@ -247,7 +245,7 @@
             </div>
         </section>
 
-        <!-- 4. Portfolio (Bottom Center on PC, Bottom on Mobile) -->
+        <!-- 4. Portfolio -->
         <section class="bg-gray-800 rounded-lg border border-gray-700 flex flex-col overflow-hidden shadow-lg col-span-1 row-span-1">
             <div class="p-2 bg-gray-900 border-b border-gray-700 font-bold text-gray-300 text-xs flex justify-between">
                 <span>포트폴리오</span>
@@ -271,10 +269,48 @@
         </section>
     </main>
 
-    <!-- INTRO SCREEN (Cinematic) -->
-    <div id="intro-overlay" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center">
+    <!-- INTRO SCREEN -->
+    <div id="intro-overlay" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-center cursor-pointer">
         <div id="intro-content" class="text-center transition-opacity duration-1000 px-4">
             <!-- JS Injected Content -->
+        </div>
+        <div class="absolute bottom-10 text-gray-500 text-sm animate-pulse">화면을 클릭하면 스킵합니다</div>
+    </div>
+
+    <!-- TUTORIAL MODAL -->
+    <div id="tutorial-overlay" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden backdrop-blur-sm">
+        <div class="bg-gray-800 w-full max-w-lg rounded-2xl border border-gray-600 shadow-2xl overflow-hidden m-4">
+            <div class="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white beast-font">초간단 가이드</h3>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="bg-gray-700 p-2 rounded text-2xl">📈</div>
+                    <div>
+                        <h4 class="font-bold text-yellow-400">저점 매수, 고점 매도</h4>
+                        <p class="text-sm text-gray-300 mt-1">쌀 때 사서 비쌀 때 파세요. 차트에 초록색 점선으로 <span class="text-green-400 font-bold">내 평단가</span>가 표시됩니다.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-gray-700 p-2 rounded text-2xl">💸</div>
+                    <div>
+                        <h4 class="font-bold text-blue-400">수량 조절 & 매매</h4>
+                        <p class="text-sm text-gray-300 mt-1">50%, 100% 버튼으로 빠르게 수량을 잡고 매수/매도 버튼을 누르세요.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-gray-700 p-2 rounded text-2xl">⚠️</div>
+                    <div>
+                        <h4 class="font-bold text-red-500">상장폐지 주의</h4>
+                        <p class="text-sm text-gray-300 mt-1">코인 가격이 <span class="text-red-500 font-bold">300원 미만</span>으로 떨어지면 즉시 삭제되고 휴지조각이 됩니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-900 border-t border-gray-700">
+                <button onclick="game.finishTutorial()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-lg text-lg transition shadow-lg">
+                    알겠습니다, 시작합니다!
+                </button>
+            </div>
         </div>
     </div>
 
@@ -300,38 +336,38 @@
         // --- Game Config ---
         const CONFIG = {
             initialMoney: 1000000,
-            timeLimitSeconds: 240, 
-            tickRate: 500, 
-            historyLength: 60,
+            timeLimitSeconds: 180, 
+            tickRate: 250, // 0.25초 (적절한 리듬감)
+            historyLength: 100, // 차트 길이
             delistPrice: 300
         };
 
         const INITIAL_STOCKS = [
-            { name: "시녕코인", code: "SYC-KRW", basePrice: 10000, volatility: 0.04 },
+            { name: "시녕코인", code: "SYC-KRW", basePrice: 3000, volatility: 0.04 },
             { name: "무민네트워크", code: "MMN-KRW", basePrice: 4000, volatility: 0.05 },
             { name: "햎프박스", code: "HFB-KRW", basePrice: 800, volatility: 0.08 },
             { name: "시카무요", code: "CKY-KRW", basePrice: 400, volatility: 0.1 },
             { name: "로보갓", code: "RBG-KRW", basePrice: 5000, volatility: 0.06 },
             { name: "마늘네트워크", code: "GAR-KRW", basePrice: 1500, volatility: 0.09 },
-            { name: "분탕코인", code: "BTG-KRW", basePrice: 2200, volatility: 0.3 },
+            { name: "분탕코인", code: "BTG-KRW", basePrice: 4000, volatility: 0.4 },
         ];
 
-        // 랜덤 생성용 이름 파츠 (Name Parts)
+        // 랜덤 생성용 이름 파츠
         const NAME_PREFIXES = [
             { ko: "분탕", en: "BT" }, { ko: "와", en: "WA" }, { ko: "미니", en: "MINI" }, { ko: "키키", en: "KIKI" },
-            { ko: "무민", en: "MOO" }, { ko: "샌드", en: "SAND" }, { ko: "스톰", en: "STORM" }, { ko: "MIPC", en: "MIPC" },
-            { ko: "시녕", en: "SN" }, { ko: "햎프", en: "HAPP" }, { ko: "올리브", en: "OLIVE" }, { ko: "진원", en: "JW" },
+            { ko: "무민", en: "MM" }, { ko: "갈릭", en: "GALIC" }, { ko: "스톰", en: "STORM" }, { ko: "MIPC", en: "MIPC" },
+            { ko: "시녕", en: "SY" }, { ko: "햎프", en: "HAPP" }, { ko: "올리브", en: "OLIVE" }, { ko: "진원", en: "JW" },
             { ko: "고야이", en: "GOY" }, { ko: "스치", en: "SCH" }, { ko: "라투", en: "RATU" }, { ko: "코디", en: "CODY" },
             { ko: "시카", en: "SK" }, { ko: "에프마스", en: "FMAS" }, { ko: "게임", en: "GAME" }, { ko: "코인", en: "COIN" },
             { ko: "브레인", en: "BRAIN" }, { ko: "로동", en: "ROD" }, { ko: "수박", en: "WAT" }, { ko: "라탕", en: "RAT" },
-            { ko: "로보", en: "ROBO" }, { ko: "마늘", en: "GAL" }, { ko: "와섭", en: "WAS" }, { ko: "백학", en: "WHT" }
+            { ko: "로보", en: "ROBO" }, { ko: "마늘", en: "GAL" }, { ko: "멜론", en: "MELON" }, { ko: "백학", en: "WHT" }
         ];
 
         const NAME_SUFFIXES = [
             { ko: "코인", en: "C" }, { ko: "토큰", en: "TK" }, { ko: "캐시", en: "CASH" }, { ko: "골드", en: "GLD" },
             { ko: "무요", en: "MUYO" }, { ko: "클래식", en: "CLS" }, { ko: "토스트", en: "TOAST" }, { ko: "네트워크", en: "NET" },
             { ko: "프로토콜", en: "PRO" }, { ko: "체인", en: "CHN" }, { ko: "파이낸스", en: "FI" }, { ko: "스왑", en: "SWP" },
-            { ko: "스테이지", en: "STG" }, { ko: "게임", en: "GAME" }, { ko: "엘론", en: "ELON" }, { ko: "믹스", en: "MIX" },
+            { ko: "갓", en: "G" }, { ko: "게임", en: "GAME" }, { ko: "멜론", en: "MELON" }, { ko: "믹스", en: "MIX" },
             { ko: "스테이션", en: "STN" }, { ko: "블록", en: "BLK" }, { ko: "박스", en: "BOX" }, { ko: "", en: "" }
         ];
 
@@ -349,6 +385,7 @@
                 this.selectedQtyPercent = 0.5;
 
                 this.isPlaying = false;
+                this.isIntroSkipped = false;
                 this.tickInterval = null;
                 this.timerInterval = null;
                 this.history = {}; 
@@ -368,6 +405,7 @@
                     orderPriceInput: document.getElementById('order-price-input'),
                     introOverlay: document.getElementById('intro-overlay'),
                     introContent: document.getElementById('intro-content'),
+                    tutorialOverlay: document.getElementById('tutorial-overlay'),
                     resultModal: document.getElementById('result-modal'),
                     modalTitle: document.getElementById('modal-title'),
                     canvas: document.getElementById('price-chart'),
@@ -379,57 +417,75 @@
                 this.resizeCanvas();
                 window.addEventListener('resize', () => this.resizeCanvas());
 
-                // Start Cinematic Intro
+                // Intro Click to Skip
+                this.els.introOverlay.addEventListener('click', () => {
+                    this.isIntroSkipped = true;
+                });
+
                 this.runIntro();
             }
 
             async runIntro() {
                 const content = this.els.introContent;
-                const wait = (ms) => new Promise(r => setTimeout(r, ms));
+                const wait = (ms) => new Promise(r => {
+                    const start = Date.now();
+                    const check = setInterval(() => {
+                        if (this.isIntroSkipped || Date.now() - start >= ms) {
+                            clearInterval(check);
+                            r();
+                        }
+                    }, 100);
+                });
 
-                // Scene 1
-                content.innerHTML = `<p class="text-xl lg:text-2xl font-bold text-white">"니들은 코인같은 거 하지 마라"</p><p class="text-sm text-gray-400 mt-4">- 무 민 -</p>`;
-                await wait(2000);
+                if (!this.isIntroSkipped) {
+                    content.innerHTML = `<p class="text-xl lg:text-2xl font-bold text-white">"니들은 코인같은 거 하지 마라"</p><p class="text-sm text-gray-400 mt-4">- 무 민 -</p>`;
+                    await wait(2000);
+                }
+                
+                if (this.isIntroSkipped) {
+                    this.showTutorial();
+                    return;
+                }
+
                 content.style.opacity = 0;
                 await wait(1000);
 
-                // Scene 2
+                if (this.isIntroSkipped) {
+                    this.showTutorial();
+                    return;
+                }
+
                 content.style.opacity = 1;
                 content.innerHTML = `<p class="text-lg lg:text-xl text-white font-medium">본 게임은 실화를 바탕으로 제작되었습니다.</p>`;
                 await wait(2000);
+
+                if (this.isIntroSkipped) {
+                    this.showTutorial();
+                    return;
+                }
+
                 content.style.opacity = 0;
                 await wait(1000);
 
-                // Scene 3 (Action)
-                content.style.opacity = 1;
-                content.innerHTML = `
-                    <div class="space-y-6 lg:space-y-8">
-                        <p class="text-2xl lg:text-3xl text-white beast-font tracking-wide">"점심시간동안 돈을 벌어보자"</p>
-                        
-                        <div class="bg-gray-900/80 p-5 rounded-xl text-left text-sm border border-gray-700 space-y-3 mx-auto max-w-xs backdrop-blur-sm">
-                            <p class="text-red-500 font-bold border-b border-gray-700 pb-2">생존 수칙</p>
-                            <ul class="space-y-2 text-gray-300">
-                                <li>1. 시드머니 <span class="text-yellow-400 font-bold">100만원</span></li>
-                                <li>2. 4분 뒤 <span class="text-green-400 font-bold">최종 자산</span>으로 점심 결정</li>
-                                <li>3. <span class="text-red-500 font-bold">300원 미만</span> 즉시 상장폐지</li>
-                            </ul>
-                        </div>
+                if (this.isIntroSkipped) {
+                    this.showTutorial();
+                    return;
+                }
 
-                        <button onclick="game.start()" class="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-200 bg-red-600 font-lg rounded-lg hover:bg-red-500 focus:outline-none ring-offset-2 focus:ring-2 ring-red-400">
-                            <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
-                            <span class="relative text-xl">드가자~</span>
-                        </button>
-                    </div>
-                `;
+                this.showTutorial();
+            }
+
+            showTutorial() {
+                this.els.introOverlay.style.display = 'none';
+                this.els.tutorialOverlay.classList.remove('hidden');
+            }
+
+            finishTutorial() {
+                this.els.tutorialOverlay.classList.add('hidden');
+                this.start();
             }
 
             start() {
-                // Fade out intro overlay
-                this.els.introOverlay.style.opacity = 0;
-                setTimeout(() => {
-                    this.els.introOverlay.style.display = 'none';
-                }, 1000);
-
                 this.resetAndStartGameLogic();
             }
 
@@ -485,27 +541,30 @@
                 if (template) {
                     stockData = { ...template };
                 } else {
-                    // 랜덤 조합 생성
                     const prefix = NAME_PREFIXES[Math.floor(Math.random() * NAME_PREFIXES.length)];
                     const suffix = NAME_SUFFIXES[Math.floor(Math.random() * NAME_SUFFIXES.length)];
                     
                     stockData = {
                         name: prefix.ko + suffix.ko,
                         code: `${prefix.en}${suffix.en}-KRW`,
-                        basePrice: Math.floor(300 + Math.random() * 20000),
-                        volatility: 0.03 + (Math.random() * 0.4) // 3% ~ 43% 기본 변동성
+                        basePrice: Math.floor(300 + Math.random() * 10000),
+                        volatility: 0.03 + (Math.random() * 0.6)
                     };
                 }
 
+                // Momentum 기반 알고리즘을 위한 속성 추가
                 const stock = {
                     id: id,
                     ...stockData,
                     currentPrice: stockData.basePrice,
                     prevPrice: stockData.basePrice,
-                    phase: 'normal',
+                    
+                    // 세력 패턴 시스템
+                    phase: 'normal', // normal, accumulation, pump, dump
                     phaseTimer: 0,
-                    antShake: false,
-                    recoveryTimer: 0
+                    
+                    // 관성 및 힘
+                    momentum: 0, // 현재 상승/하락 힘
                 };
 
                 this.stocks.push(stock);
@@ -522,50 +581,70 @@
                 
                 const finalMoney = this.getTotalValuation();
                 const profit = finalMoney - CONFIG.initialMoney;
+                
                 let menu = "";
                 let message = "";
                 let color = "";
 
-                if (profit < -750000) {
+                if (finalMoney < 100000) {
                     menu = "울면서 쓰러짐";
-                    message = "엄마 미안해ㅠㅠㅠㅠ";
-                    color = "text-blue-500";
-                } else if (profit < -500000) {
-                    menu = "처참한 결과군요";
-                    message = "넌 좀 굶어라ㅋㅋ";
-                    color = "text-gray-200";
-                } else if (profit < -250000) {
-                    menu = "눈물젖은 초코파이";
-                    message = "치킨 10마리값을 날리고도 먹을게 있다니";
-                    color = "text-gray-400";
-                } else if (profit == 0) {
+                    message = "엄마 미안해ㅠㅠㅠㅠㅠ";
+                    color = "text-gray-500"; 
+                } 
+                else if (finalMoney < 500000) {
+                    menu = "넌 좀 굶어라ㅋㅋ";
+                    message = "일.. 열심히 해야겠지?";
+                    color = "text-blue-900"; 
+                }
+                else if (finalMoney < 800000) {
+                    menu = "콜라 한 캔";
+                    message = "목이 칼칼하다.. 탄산 때문은 아닌 거 같다";
+                    color = "text-blue-700"; 
+                }
+                else if (finalMoney < 950000) {
+                    menu = "컵라면";
+                    message = "다음엔 잘 되지 않을까?";
+                    color = "text-blue-400"; 
+                }
+                else if (finalMoney < 1000000) {
+                    menu = "편의점 도시락";
+                    message = "그냥저냥 먹을만 하다";
+                    color = "text-gray-400"; 
+                }
+                else if (finalMoney == 1000000) {
                     menu = "이걸 안 해?";
                     message = "하남자ㅉㅈ";
-                    color = "text-sky-400";
-                } else if (profit < 100000) {
-                    menu = "삼각김밥이나 먹죠";
-                    message = "요즘 삼각김밥이 2000원이 넘는다고?";
-                    color = "text-green-200";
-                } else if (profit < 500000) {
-                    menu = "늘 먹던 식당으로";
-                    message = "얼큰하네요 기분이 좋습니다";
-                    color = "text-green-400";
-                } else if (profit < 1000000) {
-                    menu = "오늘 점심은 치킨이닭!";
-                    message = "10마리를 시켜도 돈이 남아";
-                    color = "text-yellow-400";
-                } else if (profit < 3000000) {
-                    menu = "오늘 점심은 소고기나 먹을까요?";
-                    message = "옆 테이블에서 보낸 와규입니다";
-                    color = "text-yellow-600";
-                } else if (profit < 10000000) {
-                    menu = "컴퓨터를 받았습니다";
-                    message = "아무 말도 하지 않았습니다";
-                    color = "text-yellow-900";
-                }else {
-                    menu = "밥이 아니라 차를 바꿔야겠는데?";
-                    message = "밥이 문제가 아님 ㅋㅋ루";
+                    color = "text-white"; 
+                }
+                else if (finalMoney < 300000) {
+                    menu = "돈까스";
+                    message = "참 좋아하는 메뉴다";
+                    color = "text-green-300"; 
+                }
+                else if (finalMoney < 5000000) {
+                    menu = "초밥";
+                    message = "광어초밥이 이렇게 쌌었나?";
+                    color = "text-green-500"; 
+                }
+                else if (finalMoney < 10000000) {
+                    menu = "비싸고 맛있는 과일";
+                    message = "역시 세상에 싸고 맛있는 과일은 없지";
+                    color = "text-yellow-400"; 
+                }
+                else if (finalMoney < 30000000) {
+                    menu = "최신형 아이맥 풀옵션";
+                    message = "대신 마음이 배불러졌다";
+                    color = "text-orange-500"; 
+                }
+                else if (finalMoney < 70000000) {
+                    menu = "중형 세단";
+                    message = "엄마 나 차샀어 먹는 거 말고 타는 차 있잖아";
                     color = "text-red-500";
+                }
+                else { 
+                    menu = "유치장에서 먹는 짜장면";
+                    message = "너 세력이지?";
+                    color = "text-purple-500"; 
                 }
 
                 this.els.modalTitle.innerHTML = `<span class='${color}'>${menu}</span>`;
@@ -606,7 +685,6 @@
                 this.drawChart();
             }
 
-            // 파산 검사 함수
             checkBankruptcy() {
                 if (this.getTotalValuation() < 5000) {
                     this.gameOver();
@@ -614,8 +692,6 @@
             }
 
             delistStock(stock, index) {
-                this.showToast(`${stock.name} 상장폐지 확정! 자산 증발`);
-
                 if (this.portfolio[stock.id].count > 0) {
                     this.portfolio[stock.id].count = 0;
                     this.portfolio[stock.id].avgPrice = 0;
@@ -648,62 +724,83 @@
 
                 this.renderStockList();
                 this.renderOrders();
-                
                 this.checkBankruptcy();
             }
 
+            // --- 세력주 알고리즘 (Manipulation Logic) ---
             updateStockPrice(stock) {
+                // 1. 패턴(Phase) 관리
                 if (stock.phaseTimer > 0) {
                     stock.phaseTimer--;
                 } else {
-                    const rand = Math.random();
-                    if (rand < 0.16) { 
-                        stock.phase = 'pump'; 
-                        stock.phaseTimer = 8 + Math.floor(Math.random() * 10);
-                    } else if (rand < 0.32) { 
-                        stock.phase = 'crash'; 
-                        stock.phaseTimer = 8 + Math.floor(Math.random() * 9);
+                    // 패턴 전환 확률
+                    const r = Math.random();
+                    if (r < 0.2) {
+                        stock.phase = 'normal'; // 횡보/일반 변동 (40%)
+                        stock.phaseTimer = 10 + Math.floor(Math.random() * 10);
+                    } else if (r < 0.5) {
+                        stock.phase = 'accumulation'; // 매집 (30%) - 가격 가두기
+                        stock.phaseTimer = 15 + Math.floor(Math.random() * 15);
+                    } else if (r < 0.75) {
+                        stock.phase = 'pump'; // 작전 개시 (상승) (15%)
+                        stock.phaseTimer = 10 + Math.floor(Math.random() * 10);
                     } else {
-                        stock.phase = 'normal';
-                        stock.phaseTimer = 4 + Math.floor(Math.random() * 8);
+                        stock.phase = 'dump'; // 설거지 (하락) (15%)
+                        stock.phaseTimer = 10 + Math.floor(Math.random() * 10);
                     }
-                    stock.antShake = false;
-                    stock.recoveryTimer = 0;
                 }
 
-                if (stock.phase === 'pump' && !stock.antShake && stock.recoveryTimer === 0 && Math.random() < 0.25) stock.antShake = true;
-                if (stock.phase === 'crash' && !stock.antShake && Math.random() < 0.2) stock.antShake = true;
+                // 2. 힘(Force) 계산
+                let force = 0;
+                let volatility = stock.volatility; // 기본 변동성
 
-                let changePercent = (Math.random() - 0.5) * stock.volatility; 
+                switch (stock.phase) {
+                    case 'normal':
+                        // 랜덤 등락
+                        force = (Math.random() - 0.5) * 0.005; 
+                        break;
+                    case 'accumulation':
+                        // 매집: 가격을 억누르거나 살짝만 올림, 변동성 감소
+                        force = (Math.random() * 0.004) - 0.001;
+                        let d = Math.random();
+                        if (d < 0.05) stock.phase = 'dump';
+                        else if (d < 0.05) stock.phase = 'dump'; 
+                        volatility *= 0.5;
+                        break;
+                    case 'pump':
+                        // 펌핑: 강력한 상승세, 중간중간 조정(개미털기)
+                        force = 0.1 + (Math.random() * 0.15); 
+                        if (Math.random() < 0.4) force = -0.09 - Math.random() * 0.05; // 20% 확률로 급락 (개미털기)
+                        if (Math.random() < 0.02) stock.phase = 'dump';
+                        volatility *= 2.0;
+                        break;
+                    case 'dump':
+                        // 덤핑: 강력한 하락세, 중간중간 반등(데드캣)
+                        force = -0.1 - (Math.random() * 0.15);
+                        if (Math.random() < 0.4) force = 0.1 + Math.random() * 0.15; // 20% 확률로 반등 (설거지)
+                        if (Math.random() < 0.02) stock.phase = 'pump';
+                        volatility *= 4.0;
+                        break;
+                }
+
+                // 3. 관성(Momentum) 적용
+                // 이전의 힘이 80% 유지되고, 새로운 힘이 20% 반영됨 -> 차트가 부드럽게 이어짐
+                stock.momentum = (stock.momentum * 0.8) + (force * 0.2);
+
+                // 4. 노이즈(Noise) 추가
+                const noise = (Math.random() - 0.5) * volatility;
+
+                // 5. 최종 등락률 결정
+                let changePercent = stock.momentum + noise;
                 
-                if (stock.recoveryTimer > 0) {
-                    changePercent = (0.2 + Math.random() * 0.25); 
-                    stock.recoveryTimer--;
-                }
-                else if (stock.phase === 'pump') {
-                    if (stock.antShake) {
-                        changePercent = -(0.2 + Math.random() * 0.15); 
-                        stock.recoveryTimer = 1 + Math.floor(Math.random() * 2);
-                    } else {
-                        changePercent += (0.05 + Math.random() * 0.1); 
-                    }
-                } else if (stock.phase === 'crash') {
-                    if (stock.antShake) {
-                        changePercent = +(0.2 + Math.random() * 0.2); 
-                    } else {
-                        changePercent -= (0.2 + Math.random() * 0.2);
-                    }
-                } else {
-                    if (Math.random() < 0.02) changePercent = (Math.random() - 0.5) * 0.3;
-                }
-
-                if (stock.antShake) stock.antShake = false;
-
+                // 가격 적용
                 stock.prevPrice = stock.currentPrice;
                 stock.currentPrice = Math.floor(stock.currentPrice * (1 + changePercent));
                 
+                // 최저가 보정
                 if (stock.currentPrice < 1) stock.currentPrice = 1;
 
+                // 히스토리 저장
                 this.history[stock.id].push(stock.currentPrice);
                 if (this.history[stock.id].length > CONFIG.historyLength) {
                     this.history[stock.id].shift();
@@ -725,6 +822,14 @@
             setOrderPriceToCurrent() {
                 const stock = this.stocks.find(s => s.id === this.selectedStockId);
                 if(stock) this.els.orderPriceInput.value = stock.currentPrice;
+            }
+
+            adjustPrice(percent) {
+                const stock = this.stocks.find(s => s.id === this.selectedStockId);
+                if(!stock) return;
+                const currentVal = stock.currentPrice;
+                const newVal = Math.floor(currentVal * (1 + percent / 100));
+                this.els.orderPriceInput.value = Math.max(1, newVal);
             }
 
             placeOrder(type) {
@@ -749,7 +854,6 @@
                         this.showToast("시드가 부족합니다.");
                         return;
                     }
-                    // 매수 주문 즉시 돈 빠져나감 (지정가 매수)
                     this.money -= (qty * inputPrice);
 
                 } else {
@@ -780,7 +884,7 @@
                 };
 
                 this.orders.push(order);
-                this.showToast(`${type === 'buy'?'매수':'매도'} 주문: ${qty}주`);
+                this.showToast(`${type === 'buy'?'매수':'매도'} 주문: ${qty}개`);
                 this.renderOrders();
                 this.updateUI(); 
                 this.checkOrders();
@@ -802,7 +906,6 @@
                     if (order.type === 'buy') {
                         if (currentPrice <= order.price) {
                             const actualCost = currentPrice * order.qty;
-                            // 지정가 매수이므로 예약된 돈(order.price)을 그대로 사용
                             const reservedCost = order.price * order.qty;
                             
                             const p = this.portfolio[stock.id];
@@ -839,7 +942,6 @@
                 const order = this.orders[idx];
                 
                 if (order.type === 'buy') {
-                    // 매수 취소 시 돈 환불
                     this.money += (order.price * order.qty);
                 } else {
                     const p = this.portfolio[order.stockId];
@@ -859,8 +961,6 @@
                 this.updateUI();
                 this.showToast("주문이 취소되었습니다.");
             }
-
-            // --- UI Updates ---
 
             showToast(msg) {
                 this.els.toastMsg.textContent = msg;
@@ -959,7 +1059,7 @@
                         </div>
                         <div class="text-right">
                             <div class="price font-mono font-bold text-sm ${colorClass}">${s.currentPrice.toLocaleString()}</div>
-                            <div class="change text-[10px] ${colorClass}">${change.toFixed(2)}%</div>
+                            <div class="change text-[10px] ${colorClass}">${change > 0?"+":""}${change.toFixed(2)}%</div>
                         </div>
                     `;
                     this.els.stockList.appendChild(div);
@@ -969,7 +1069,7 @@
             renderOrders() {
                 this.els.orderList.innerHTML = '';
                 if (this.orders.length === 0) {
-                    this.els.orderList.innerHTML = '<div class="text-center text-gray-600 text-xs mt-4">대기 중인 주문이 없습니다.</div>';
+                    this.els.orderList.innerHTML = '<div class="text-center text-gray-600 text-xs mt-4">...</div>';
                     return;
                 }
 
@@ -1050,6 +1150,7 @@
                 ctx.fillStyle = '#111827';
                 ctx.fillRect(0,0,w,h);
                 
+                // Grid
                 ctx.strokeStyle = '#374151'; 
                 ctx.lineWidth = 0.5;
                 ctx.beginPath();
@@ -1074,6 +1175,7 @@
 
                 const mapY = (val) => h - ((val - min) / (max - min)) * h;
 
+                // Delist Line
                 const delistY = mapY(CONFIG.delistPrice);
                 if (delistY < h && delistY > 0) {
                     ctx.fillStyle = 'rgba(220, 38, 38, 0.1)'; 
@@ -1090,8 +1192,8 @@
                     ctx.fillText('상장폐지 라인 (300원)', 5, delistY - 5);
                 }
 
+                // Chart Line
                 const lineColor = history[history.length-1] >= history[0] ? '#ff4d4d' : '#4d79ff';
-                
                 ctx.beginPath();
                 ctx.lineWidth = 2.5;
                 ctx.strokeStyle = lineColor;
@@ -1107,6 +1209,7 @@
                 });
                 ctx.stroke();
 
+                // Gradient Fill
                 const grad = ctx.createLinearGradient(0, 0, 0, h);
                 grad.addColorStop(0, lineColor + '33'); 
                 grad.addColorStop(1, lineColor + '00'); 
@@ -1116,6 +1219,7 @@
                 ctx.fillStyle = grad;
                 ctx.fill();
 
+                // Order Lines
                 const sId = this.selectedStockId;
                 this.orders.forEach(o => {
                     if (o.stockId === sId) {
@@ -1133,6 +1237,27 @@
                     }
                 });
 
+                // Average Price Line (평단가)
+                const portfolioItem = this.portfolio[sId];
+                if (portfolioItem && portfolioItem.count > 0 && portfolioItem.avgPrice > 0) {
+                    const avgY = mapY(portfolioItem.avgPrice);
+                    if (avgY >= 0 && avgY <= h) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#4ade80'; // Green
+                        ctx.lineWidth = 1.5;
+                        ctx.setLineDash([5, 3]);
+                        ctx.moveTo(0, avgY);
+                        ctx.lineTo(w, avgY);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        
+                        ctx.fillStyle = '#4ade80';
+                        ctx.font = 'bold 11px sans-serif';
+                        ctx.fillText(`내 평단가: ${portfolioItem.avgPrice.toLocaleString()}`, 5, avgY - 5);
+                    }
+                }
+
+                // Current Price Dot
                 const lastY = mapY(history[history.length-1]);
                 ctx.beginPath();
                 ctx.arc(w - 4, lastY, 4, 0, Math.PI * 2);
