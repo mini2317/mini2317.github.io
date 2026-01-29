@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Suika</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Jua for KR, Fredoka for EN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Jua&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+
+<body>
+    <div id="game-container">
+
+        <div id="danger-overlay"></div>
+
+        <div id="ui-layer">
+            <div id="header-bar">
+                <div class="score-box">
+                    <span id="label-score" class="label">Score</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <span id="label-highscore" class="label">Best</span>
+                    <span id="high-score">0</span>
+                </div>
+            </div>
+
+            <div id="right-panel">
+                <div id="next-queue-container">
+                    <span id="label-next" class="label">Next</span>
+
+                    <!-- Main Next (Immediate) -->
+                    <div id="next-piece-display" class="queue-item main"></div>
+
+                    <!-- Divider -->
+                    <div class="queue-divider"></div>
+
+                    <!-- Future Nexts -->
+                    <div id="next-queue-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <div class="tooltip-container">
+                    <button id="btn-switch" class="action-btn" disabled>🔁</button>
+                    <span id="switch-tooltip" class="tooltip-text">Swap Balls</span>
+                </div>
+                <div style="height:5px"></div>
+                <div class="tooltip-container">
+                    <button id="btn-bomb" class="action-btn" disabled>💣</button>
+                    <span id="bomb-tooltip" class="tooltip-text">Explode Area</span>
+                </div>
+
+            </div>
+
+
+            <div id="controls-hint">
+                <span id="hint-text">Click to Drop</span>
+            </div>
+        </div>
+
+        <canvas id="world"></canvas>
+
+        <!-- Rules Modal -->
+        <div id="modal-rules" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="rules-title">Rules</h2>
+                <div id="rules-body-container">
+                    <div id="rules-body">...</div>
+                </div>
+                <button id="btn-close-rules">OK</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Left Controls (Outside Game) -->
+    <div id="bottom-controls">
+        <button id="btn-lang" class="action-btn small-btn">EN/KR</button>
+        <div style="width:10px"></div>
+        <button id="btn-rules" class="action-btn small-btn">?</button>
+    </div>
+
+    <script src="js/constants.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/agent.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
