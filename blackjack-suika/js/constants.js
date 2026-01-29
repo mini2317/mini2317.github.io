@@ -23,12 +23,12 @@ const SUIT_KEYS = Object.keys(SUITS);
 
 // Increased Ace (1) frequency
 const DROP_VALUES = [
-    1, 1, 1, 1, 1,
-    2, 2, 2,
-    3, 3,
-    4, 4,
-    5, 5,
-    6, 7, 8, 9
+    1, 1, 1, 1,
+    2, 2,
+    3,
+    4,
+    5,
+    6, 7, 8, 9, 10
 ];
 
 const TEXTS = {
@@ -63,8 +63,8 @@ const TEXTS = {
         - <b style="color:#ff4d4d">Sum > 21</b>: No Merge!<br>
         <br>
         <b>2. Rewards (Suit Effects)</b><br>
-        - <b style="color:#a0a0a0">♠ Spade</b>: <b>Impact</b> (Push nearby balls).<br>
-        - <b style="color:#ff7f50">♦ Diamond</b>: <b>Chaos</b> (Spawns random junk balls!).<br>
+        - <b style="color:#a0a0a0">♠ Spade</b>: <b>Impact</b> (Push nearby balls. <b style="color:red">Risk!</b>).<br>
+        - <b style="color:#ff7f50">♦ Diamond</b>: <b>Chaos</b> (Spawns junk balls. <b style="color:red">Risk!</b>).<br>
         - <b style="color:#f94144">♥ Heart</b>: <b>Bomb</b> (Get Bomb Item).<br>
         - <b style="color:#8ecae6">♣ Club</b>: <b>Switch</b> (Get Swap Item).<br>
         <br>
@@ -110,8 +110,8 @@ const TEXTS = {
         - <b style="color:#ff4d4d">합이 21 초과</b>: 합쳐지지 않습니다!<br>
         <br>
         <b>2. 무늬별 보상 (완성 시)</b><br>
-        - <b style="color:#a0a0a0">♠ 스페이드</b>: <b>충격</b> (주변을 밀어냄)<br>
-        - <b style="color:#ff7f50">♦ 다이아</b>: <b>혼돈</b> (랜덤한 공들이 마구 쏟아짐!)<br>
+        - <b style="color:#a0a0a0">♠ 스페이드</b>: <b>충격</b> (주변을 밀어냄. <b style="color:red">주의!</b>)<br>
+        - <b style="color:#ff7f50">♦ 다이아</b>: <b>혼돈</b> (쓰레기 공 투하. <b style="color:red">주의!</b>)<br>
         - <b style="color:#f94144">♥ 하트</b>: <b>폭탄</b> (폭탄 아이템 획득)<br>
         - <b style="color:#8ecae6">♣ 클로버</b>: <b>스위치</b> (위치 교환 아이템 획득)<br>
         <br>

@@ -560,6 +560,26 @@ class Game {
             this.mouseX = Math.max(limit, Math.min(rawX, CONFIG.WIDTH - limit));
         });
 
+        // Mobile Touch Support (Move)
+        this.canvas.addEventListener('touchmove', (e) => {
+            if (this.isGameOver) return;
+            e.preventDefault(); // Prevent scrolling
+            const rect = this.canvas.getBoundingClientRect();
+            // Scale touch position to canvas coordinates
+            const scaleX = CONFIG.WIDTH / rect.width;
+            const rawX = (e.touches[0].clientX - rect.left) * scaleX;
+
+            let limit = 40;
+            if (!this.isSwitchMode && !this.isBombMode && this.nextQueue.length > 0) {
+                const val = this.nextQueue[0].value;
+                const r = 20 + (val * 2.5);
+                limit = 10 + r + 2;
+            }
+            if (this.isBombMode) limit = 32;
+
+            this.mouseX = Math.max(limit, Math.min(rawX, CONFIG.WIDTH - limit));
+        }, { passive: false });
+
         this.canvas.addEventListener('click', (e) => {
             if (this.isGameOver) return;
             if (e.target.closest('.action-btn')) return;
@@ -595,13 +615,48 @@ class Game {
                             this.selectedBall = null;
                         }
                     }
-                } else {
-                    this.isSwitchMode = false;
                     this.selectedBall = null;
                     this.updateUI();
                 }
             } else if (this.isBombMode) {
                 // Drop Bomb (Consumes Item)
+                this.bombCount--;
+                this.isBombMode = false;
+                this.updateUI();
+                this.dropBomb(clampX);
+            } else {
+                if (!this.canDrop) return;
+                this.dropBall(clampX);
+            }
+        });
+
+        // Mobile Touch Support (Click/Drop)
+        this.canvas.addEventListener('touchend', (e) => {
+            if (this.isGameOver) return;
+            e.preventDefault();
+
+            // Use last known mouseX for drop position since touchend has no coordinates
+            const clampX = this.mouseX;
+
+            if (this.isSwitchMode) {
+                // Switch logic slightly harder on touch without simplified target selection, 
+                // but for dropping logic it's fine. 
+                // For now, Switch Mode might need direct tap. 
+                // Let's rely on standard click handling for UI, but canvas tap for drop.
+            }
+
+            if (this.isSwitchMode) {
+                // Determine tap position from changedTouches if possible
+                if (e.changedTouches.length > 0) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const scaleX = CONFIG.WIDTH / rect.width;
+                    const scaleY = CONFIG.HEIGHT / rect.height;
+                    const tapX = (e.changedTouches[0].clientX - rect.left) * scaleX;
+                    const tapY = (e.changedTouches[0].clientY - rect.top) * scaleY;
+
+                    this.handleSwitchClick(tapX, tapY);
+                }
+            } else if (this.isBombMode) {
                 this.bombCount--;
                 this.isBombMode = false;
                 this.updateUI();
