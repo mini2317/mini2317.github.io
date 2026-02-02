@@ -615,7 +615,6 @@ class Game {
                             this.selectedBall = null;
                         }
                     }
-                    this.selectedBall = null;
                     this.updateUI();
                 }
             } else if (this.isBombMode) {
